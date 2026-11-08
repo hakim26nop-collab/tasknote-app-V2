@@ -110,9 +110,10 @@
       <div class="form-grid">
         <label class="field">Mata pelajaran<select id="taskSubject"></select></label>
         <label class="field">Deadline<input id="taskDue" type="date"></label>
-        <label class="field">Prioritas<select id="taskPriority"><option value="normal">Normal</option><option value="high">Tinggi</option><option value="urgent">Mendesak</option></select></label>
+        <label class="field">Prioritas<select id="taskPriority"><option value="low">Rendah</option><option value="medium" selected>Sedang</option><option value="high">Tinggi</option></select></label>
         <label class="field">Status<select id="taskStatus"><option value="todo">Belum dikerjakan</option><option value="doing">Sedang dikerjakan</option><option value="done">Selesai</option></select></label>
       </div>
+      <div class="inline-form"><input id="newTaskSubject" placeholder="Tambah mapel baru, contoh: Matematika"><button type="button" class="secondary" id="addTaskSubject">Tambah mapel</button></div>
       <label class="field">Catatan (opsional)<textarea id="taskDescription" rows="3" placeholder="Detail atau instruksi tugas…"></textarea></label>
       <div class="dialog-actions"><button type="button" class="secondary" id="cancelDialog">Batal</button><button type="submit" class="primary" id="saveTask">Simpan tugas</button></div>
     </form>
