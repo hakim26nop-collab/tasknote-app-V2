@@ -172,3 +172,158 @@ body.dark .auth-card,body.dark .stat-card,body.dark .setting-card,body.dark .tas
   box-shadow:7px 16px 31px rgba(0,0,0,.34),2px 5px 11px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.025);
 }
 body.dark .topbar{box-shadow:4px 7px 18px rgba(0,0,0,.16)}
+
+
+/* TaskNote redesign v2 — consistent layout, clearer hierarchy, responsive surfaces */
+:root{
+  --bg:#edf0fb;--surface:#ffffff;--text:#20243a;--muted:#747b94;--line:#e2e6f1;
+  --accent:#5148c9;--accent2:#efefff;
+}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse at 12% 0%,rgba(117,125,222,.22),transparent 34%),
+    radial-gradient(ellipse at 92% 18%,rgba(115,159,220,.16),transparent 32%),
+    linear-gradient(180deg,#e1e6fb 0%,#edf0fb 42%,#f7f8fd 100%);
+  background-attachment:fixed;
+}
+.auth-shell{
+  background:
+    radial-gradient(ellipse at 15% 12%,rgba(108,105,216,.22),transparent 38%),
+    radial-gradient(ellipse at 88% 90%,rgba(93,154,211,.17),transparent 38%),
+    linear-gradient(180deg,#e0e5fb,#f7f8fd);
+}
+.auth-card{
+  width:min(100%,440px);padding:42px;
+  border:1px solid rgba(255,255,255,.92);border-radius:27px;
+  background:linear-gradient(145deg,#fff 0%,#fbfbff 100%);
+  box-shadow:8px 22px 46px rgba(39,47,112,.15),2px 6px 14px rgba(39,47,112,.07);
+}
+.auth-card .brand{margin-bottom:32px}
+.auth-card h1{font-size:29px;line-height:1.2}
+.brand{font-size:21px}
+.brand-mark{width:34px;height:34px;border-radius:11px}
+.sidebar{
+  width:250px;padding:30px 19px 20px;
+  background:linear-gradient(180deg,#fff 0%,#fafbff 100%);
+  border-right:1px solid rgba(220,225,242,.9);
+  box-shadow:7px 0 28px rgba(38,46,104,.055);
+}
+.brand-link{margin-bottom:42px}
+.nav-item{padding:12px 14px;margin:3px 0;border-radius:11px;font-size:13px}
+.nav-item.active{
+  background:linear-gradient(100deg,#e9eaff,#f5f5ff);
+  box-shadow:inset 3px 0 0 var(--accent),0 4px 12px rgba(66,65,160,.06);
+}
+.main-area{margin-left:250px}
+.topbar{
+  height:72px;padding:0 clamp(20px,4vw,48px);
+  background:rgba(255,255,255,.84);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(222,226,241,.88);
+  box-shadow:4px 8px 20px rgba(38,46,104,.045);
+}
+.content{max-width:1240px;padding:42px clamp(20px,4vw,48px) 56px}
+.welcome-row,.page-heading{margin-bottom:30px}
+.welcome-row h1{font-size:clamp(27px,3vw,34px);line-height:1.18}
+.welcome-row p,.page-heading p{line-height:1.55}
+.eyebrow{letter-spacing:1.7px}
+.primary,.secondary{border-radius:11px;padding:12px 17px}
+.primary{background:linear-gradient(135deg,#625be0,#4941bd);box-shadow:0 7px 16px rgba(79,70,200,.2),inset 0 1px 0 rgba(255,255,255,.25)}
+.primary:hover{box-shadow:0 10px 20px rgba(79,70,200,.26)}
+.stats-grid{gap:19px;margin:27px 0 42px}
+.stat-card,.setting-card{
+  border-radius:18px;padding:22px;
+  background:linear-gradient(150deg,#fff 0%,#fbfbff 100%);
+  border:1px solid rgba(225,229,244,.95);
+  box-shadow:7px 16px 31px rgba(38,45,94,.11),2px 5px 11px rgba(38,45,94,.055),inset 0 1px 0 #fff;
+}
+.stat-card{gap:10px;min-height:142px}
+.stat-card small{font-size:12px;font-weight:600}
+.stat-card strong{font-size:31px;line-height:1.1}
+.stat-icon{width:37px;height:37px;border-radius:12px;font-size:17px}
+.section-heading{margin-bottom:17px}
+.section-heading h2,.setting-card h2{font-size:17px}
+.task-list{gap:12px}
+.task-row{
+  padding:17px 18px;border-radius:15px;
+  background:linear-gradient(145deg,#fff,#fcfcff);
+  border:1px solid #e5e8f3;
+  box-shadow:6px 13px 25px rgba(35,42,92,.095),2px 4px 9px rgba(35,42,92,.05),inset 0 1px 0 #fff;
+}
+.task-title{font-size:14px;line-height:1.45}
+.task-meta{font-size:11px;line-height:1.45}
+.pill{padding:5px 9px;border-radius:8px}
+.task-check{width:21px;height:21px}
+.small-action{border-radius:8px;padding:7px 9px}
+.small-action:hover{background:var(--accent2);color:var(--accent)}
+.toolbar{gap:11px;margin:0 0 20px}
+.toolbar input,.toolbar select{min-height:44px;border-radius:11px}
+.settings-grid{gap:18px}
+.setting-card{padding:23px;gap:15px}
+.setting-card p{line-height:1.6}
+.setting-card .primary,.setting-card .secondary{justify-self:start}
+.field{gap:9px}
+.field input,.field select,.field textarea{border-radius:11px;padding:13px 14px}
+.task-dialog{border-radius:22px}
+.task-dialog form{padding:29px;gap:18px;border-radius:22px}
+.dialog-head{margin-bottom:2px}
+.dialog-head h2{font-size:22px}
+.empty{padding:42px 20px;border-radius:16px;line-height:1.6}
+.profile-mini{padding-top:19px}
+.avatar{width:37px;height:37px}
+.icon-button{width:39px;height:39px;border-radius:11px}
+.toast{border:1px solid rgba(255,255,255,.12)}
+body.dark{
+  --bg:#151827;--surface:#22263a;--text:#f1f2fb;--muted:#a6acc1;--line:#383d55;
+  --accent:#a29cff;--accent2:#333451;
+  background:
+    radial-gradient(ellipse at 12% 0%,rgba(112,105,218,.24),transparent 35%),
+    radial-gradient(ellipse at 92% 18%,rgba(78,116,176,.15),transparent 34%),
+    linear-gradient(180deg,#242945 0%,#191d30 48%,#151827 100%);
+  background-attachment:fixed;
+}
+body.dark .auth-shell{
+  background:radial-gradient(ellipse at 15% 12%,rgba(112,105,218,.25),transparent 38%),linear-gradient(180deg,#282d4e,#171b2c);
+}
+body.dark .auth-card,body.dark .stat-card,body.dark .setting-card,body.dark .task-row{
+  background:linear-gradient(150deg,#292e43 0%,#22263a 100%);
+  border-color:#3b4059;
+  box-shadow:7px 16px 31px rgba(0,0,0,.34),2px 5px 11px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.025);
+}
+body.dark .sidebar{background:linear-gradient(180deg,#22263a,#1d2133);border-color:#383d55}
+body.dark .topbar{background:rgba(34,38,58,.88);border-color:#383d55}
+body.dark .nav-item.active{background:linear-gradient(100deg,#343451,#292d43)}
+body.dark .stat-card:before,body.dark .setting-card:before{opacity:.55}
+body.dark .task-dialog form{background:linear-gradient(150deg,#292e43,#22263a)}
+body.dark .secondary{background:linear-gradient(145deg,#383b5d,#30334e);border-color:#484c70;color:#d1ceff}
+body.dark .pill{background:#373b52;border-color:#454a63;color:#d6d9e9}
+body.dark .chip{background:linear-gradient(145deg,#383b5d,#30334e);border-color:#484c70}
+body.dark .empty{background:rgba(34,38,58,.55);border-color:#484d67}
+@media(max-width:900px){
+  .sidebar{width:250px}
+  .main-area{margin-left:0}
+  .content{padding:30px 22px 44px}
+}
+@media(max-width:600px){
+  .topbar{height:62px;padding:0 14px}
+  .content{padding:25px 15px 38px}
+  .welcome-row,.page-heading{gap:16px;margin-bottom:23px}
+  .welcome-row h1{font-size:27px}
+  .welcome-row>.primary,.page-heading>.primary{width:100%}
+  .stats-grid{gap:9px;margin:22px 0 33px}
+  .stat-card{padding:13px 11px;min-height:124px;border-radius:14px;gap:8px}
+  .stat-card strong{font-size:25px}
+  .stat-card small{font-size:10px;line-height:1.35}
+  .stat-icon{width:31px;height:31px;border-radius:10px}
+  .section-heading{align-items:flex-start;gap:8px}
+  .section-heading h2{font-size:16px}
+  .section-heading p{max-width:245px;line-height:1.5}
+  .task-row{padding:13px 12px;gap:10px}
+  .task-title{font-size:13px}
+  .task-meta{gap:6px}
+  .task-actions{flex-direction:row}
+  .settings-grid{grid-template-columns:1fr;gap:13px}
+  .setting-card{padding:19px}
+  .auth-card{padding:30px 23px}
+  .task-dialog form{padding:22px 18px}
+}
