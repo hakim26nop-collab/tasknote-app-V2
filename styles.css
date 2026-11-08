@@ -117,26 +117,38 @@ body.dark .icon-button:hover{background:#30334b;border-color:#4a4e70}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 
-/* Stronger upward background gradient */
+/* Stronger downward gradient and deeper soft shadows */
 body{
   background:
-    radial-gradient(ellipse at 50% 100%,rgba(91,105,220,.20) 0%,rgba(125,145,229,.11) 34%,transparent 72%),
-    linear-gradient(to top,#e0e6ff 0%,#edf0ff 34%,#f5f6ff 70%,#ffffff 100%);
+    radial-gradient(ellipse at 50% 0%,rgba(76,91,205,.27) 0%,rgba(111,128,219,.17) 34%,transparent 76%),
+    linear-gradient(to bottom,#d7defd 0%,#e8ecff 30%,#f1f3ff 62%,#ffffff 100%);
   background-attachment:fixed;
 }
 .auth-shell{
   background:
-    radial-gradient(ellipse at 50% 100%,rgba(91,86,211,.23) 0%,rgba(112,130,220,.12) 38%,transparent 72%),
-    linear-gradient(to top,#dfe5ff 0%,#eef0ff 46%,#fafaff 100%);
+    radial-gradient(ellipse at 50% 0%,rgba(76,83,195,.30) 0%,rgba(103,119,214,.17) 40%,transparent 78%),
+    linear-gradient(to bottom,#d8defd 0%,#e9edff 52%,#fafaff 100%);
+}
+.stat-card,.setting-card{
+  box-shadow:0 15px 32px rgba(38,45,94,.105),0 4px 10px rgba(38,45,94,.055),inset 0 1px 0 #fff;
+}
+.task-row{
+  box-shadow:0 10px 24px rgba(35,42,92,.085),0 3px 7px rgba(35,42,92,.045),inset 0 1px 0 #fff;
+}
+.stat-card:hover,.setting-card:hover,.task-row:hover{
+  box-shadow:0 19px 38px rgba(35,42,92,.14),0 5px 12px rgba(35,42,92,.06);
 }
 body.dark{
   background:
-    radial-gradient(ellipse at 50% 100%,rgba(111,104,222,.22) 0%,rgba(88,100,177,.10) 42%,transparent 75%),
-    linear-gradient(to top,#202440 0%,#191d30 48%,#141622 100%);
+    radial-gradient(ellipse at 50% 0%,rgba(111,104,222,.29) 0%,rgba(88,100,177,.15) 42%,transparent 78%),
+    linear-gradient(to bottom,#252a4b 0%,#1c2036 48%,#141622 100%);
   background-attachment:fixed;
 }
 body.dark .auth-shell{
   background:
-    radial-gradient(ellipse at 50% 100%,rgba(111,104,222,.25) 0%,rgba(88,100,177,.12) 42%,transparent 75%),
-    linear-gradient(to top,#242746 0%,#191d30 100%);
+    radial-gradient(ellipse at 50% 0%,rgba(111,104,222,.30) 0%,rgba(88,100,177,.16) 44%,transparent 78%),
+    linear-gradient(to bottom,#292e50 0%,#191d30 100%);
+}
+body.dark .stat-card,body.dark .setting-card,body.dark .task-row{
+  box-shadow:0 15px 32px rgba(0,0,0,.32),0 4px 10px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.025);
 }
