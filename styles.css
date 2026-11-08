@@ -456,3 +456,14 @@ body.dark .task-dialog form{
 }
 body.dark .stat-card:before,
 body.dark .setting-card:before{opacity:.38}
+
+/* Profile photo upload and avatar presentation */
+.avatar{position:relative;overflow:hidden;flex:0 0 auto}
+.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.avatar.has-photo{color:transparent;background:#e5eef8}
+.profile-editor{display:flex;align-items:center;gap:14px}
+.profile-editor p{margin:5px 0 0;font-size:12px;line-height:1.5}
+.profile-avatar-large{width:62px;height:62px;border-radius:18px;font-size:22px}
+.avatar-upload-label{justify-self:start;cursor:pointer}
+.avatar-upload-label input{display:none}
+body.dark .avatar.has-photo{background:#30445d}
