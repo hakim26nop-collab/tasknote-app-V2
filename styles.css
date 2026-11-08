@@ -421,3 +421,38 @@ body.dark .violet{background:#30445d;color:#a9c9eb}
 body.dark .amber{background:#4a4032;color:#e2c18b}
 body.dark .green{background:#29463f;color:#8dc7ae}
 body.dark .icon-button:hover{background:#2c4059;border-color:#49617d;color:#c1d9f2}
+
+
+/* Gradient correction — visible in light mode, restrained in dark mode */
+body:not(.dark){
+  background:
+    radial-gradient(ellipse 95% 48% at 50% 0%,rgba(91,139,194,.34) 0%,rgba(126,163,205,.19) 48%,transparent 100%),
+    linear-gradient(180deg,#dce8f6 0%,#e8eff8 34%,#f1f5fa 68%,#f8fafd 100%);
+  background-attachment:fixed;
+}
+body:not(.dark) .auth-shell{
+  background:
+    radial-gradient(ellipse 100% 55% at 50% 0%,rgba(75,126,185,.34) 0%,rgba(125,163,204,.18) 55%,transparent 100%),
+    linear-gradient(180deg,#dce8f6 0%,#edf3fa 58%,#f8fafd 100%);
+}
+body.dark{
+  background:
+    radial-gradient(ellipse 100% 46% at 50% 0%,rgba(65,104,149,.22) 0%,rgba(47,76,112,.12) 52%,transparent 100%),
+    linear-gradient(180deg,#22334a 0%,#1b293b 42%,#141d2b 100%);
+  background-attachment:fixed;
+}
+body.dark .auth-shell{
+  background:
+    radial-gradient(ellipse 100% 54% at 50% 0%,rgba(65,104,149,.23) 0%,rgba(47,76,112,.12) 56%,transparent 100%),
+    linear-gradient(180deg,#263a52 0%,#172335 100%);
+}
+body.dark .auth-card,
+body.dark .stat-card,
+body.dark .setting-card,
+body.dark .task-row,
+body.dark .task-dialog form{
+  background:linear-gradient(155deg,#27364a 0%,#222f42 100%);
+  border-color:#394b61;
+}
+body.dark .stat-card:before,
+body.dark .setting-card:before{opacity:.38}
