@@ -110,7 +110,7 @@
     currentView=view;const names={dashboard:"Ringkasan",all:"Semua Tugas",today:"Hari Ini",upcoming:"Mendatang",completed:"Tugas Selesai",settings:"Pengaturan"};
     $("pageTitle").textContent=names[view];$("listHeading").textContent=names[view]||"Semua Tugas";
     $("dashboardPanel").classList.toggle("hidden",view!=="dashboard");$("tasksPanel").classList.toggle("hidden",!["all","today","upcoming","completed"].includes(view));$("settingsPanel").classList.toggle("hidden",view!=="settings");
-    render();$("sidebar").classList.remove("open");
+    render();$("sidebar").classList.remove("open");$("appView").classList.remove("menu-open");
   }
   document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>goto(b.dataset.view)));
   document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>goto(b.dataset.goto)));
@@ -226,7 +226,10 @@
   function toggleTheme(){document.body.classList.toggle("dark");localStorage.setItem("tasknote-theme",document.body.classList.contains("dark")?"dark":"light")}
   if(localStorage.getItem("tasknote-theme")==="dark")document.body.classList.add("dark");
   $("themeToggle").addEventListener("click",toggleTheme);$("settingsTheme").addEventListener("click",toggleTheme);
-  $("menuToggle").addEventListener("click",()=>$("sidebar").classList.toggle("open"));
+  const toggleMenu=()=>{$("sidebar").classList.toggle("open");$("appView").classList.toggle("menu-open");$("menuToggle").setAttribute("aria-expanded",$("appView").classList.contains("menu-open")?"true":"false");};
+  $("menuToggle").addEventListener("click",toggleMenu);
+  $("menuBackdrop").addEventListener("click",toggleMenu);
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("appView").classList.contains("menu-open"))toggleMenu();});
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBtn").classList.remove("hidden")});
   $("installBtn").addEventListener("click",async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$("installBtn").classList.add("hidden")});
   if("serviceWorker" in navigator&&location.protocol!=="file:")window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(console.warn));
