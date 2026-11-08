@@ -19,7 +19,7 @@
       <div class="brand"><span class="brand-mark">✓</span><span>TaskNote</span></div>
       <p class="eyebrow">ASISTEN TUGAS SEKOLAH</p>
       <h1 id="authTitle">Selamat datang kembali</h1>
-      <p class="muted" id="authSubtitle">Masuk untuk melihat dan mengatur tugasmu.</p>
+      <p class="muted" id="authSubtitle">Masuk dengan akun atau lanjut sebagai tamu tanpa membuat akun.</p>
       <form id="authForm" class="stack">
         <label id="nameField" class="field hidden">Nama
           <input id="displayName" autocomplete="name" placeholder="Nama kamu">
@@ -31,9 +31,10 @@
           <input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Minimal 6 karakter">
         </label>
         <button class="primary full" id="authSubmit" type="submit">Masuk</button>
+        <button class="secondary full" id="guestBtn" type="button">Lanjut sebagai tamu</button>
       </form>
       <p class="auth-switch"><span id="switchText">Belum punya akun?</span> <button id="switchAuth" class="text-button" type="button">Daftar</button></p>
-      <p class="tiny muted">Akun dan tugasmu bersifat pribadi.</p>
+      <p class="tiny muted">Mode Tamu menyimpan data di perangkat ini. Login diperlukan untuk sinkronisasi akun.</p>
     </section>
   </main>
 
@@ -90,13 +91,13 @@
         <section id="settingsPanel" class="panel hidden">
           <div class="page-heading"><div><p class="eyebrow">PREFERENSI</p><h1>Pengaturan</h1><p class="muted">Atur akun dan pengalaman TaskNote.</p></div></div>
           <div class="settings-grid">
-            <article class="setting-card"><h2>Profil</h2><div class="profile-editor"><div class="avatar profile-avatar-large" id="settingsAvatarInitial">T<img id="settingsAvatarImage" alt="Pratinjau foto profil" hidden></div><div><strong>Foto profil</strong><p class="muted">Pilih foto JPG, PNG, atau WebP (maksimal 2 MB).</p></div></div><label class="secondary file-button avatar-upload-label">＋ Pilih foto<input id="avatarFile" type="file" accept="image/jpeg,image/png,image/webp" hidden></label><p class="tiny muted" id="avatarUploadStatus">Foto profil akan tersimpan di akunmu.</p><label class="field">Nama tampilan<input id="settingsName" placeholder="Nama kamu"></label><button class="primary" id="saveProfile">Simpan nama</button></article>
-            <article class="setting-card"><h2>Keamanan akun</h2><label class="field">Password baru<input id="newPassword" type="password" minlength="6" placeholder="Minimal 6 karakter"></label><button class="secondary" id="changePassword">Ubah password</button></article>
+            <article class="setting-card"><h2>Profil</h2><div class="profile-editor"><div class="avatar profile-avatar-large" id="settingsAvatarInitial">T<img id="settingsAvatarImage" alt="Pratinjau foto profil" hidden></div><div><strong>Foto profil</strong><p class="muted">Pilih foto JPG, PNG, atau WebP (maksimal 2 MB).</p></div></div><label class="secondary file-button avatar-upload-label" data-account-only>＋ Pilih foto<input id="avatarFile" type="file" accept="image/jpeg,image/png,image/webp" hidden></label><p class="tiny muted" id="avatarUploadStatus">Foto profil akan tersimpan di akunmu.</p><label class="field">Nama tampilan<input id="settingsName" placeholder="Nama kamu"></label><button class="primary" id="saveProfile">Simpan nama</button></article>
+            <article class="setting-card" data-account-only><h2>Keamanan akun</h2><label class="field">Password baru<input id="newPassword" type="password" minlength="6" placeholder="Minimal 6 karakter"></label><button class="secondary" id="changePassword">Ubah password</button></article>
             <article class="setting-card"><h2>Mata pelajaran</h2><p class="muted">Kelola daftar mata pelajaran untuk tugasmu.</p><div class="inline-form"><input id="newSubject" placeholder="Contoh: Matematika"><button class="secondary" id="addSubject">Tambah</button></div><div id="subjectChips" class="chips"></div></article>
             <article class="setting-card"><h2>Backup data</h2><p class="muted">Simpan salinan tugas pribadi dalam format JSON.</p><div class="button-row"><button class="secondary" id="exportBtn">↓ Ekspor JSON</button><label class="secondary file-button">↑ Impor JSON<input id="importFile" type="file" accept="application/json,.json" hidden></label></div></article>
             <article class="setting-card"><h2>Tampilan</h2><p class="muted">Pilih tema yang nyaman digunakan.</p><button class="secondary" id="settingsTheme">Ganti tema terang/gelap</button></article>
           </div>
-          <p class="tiny muted">TaskNote tidak menampilkan iklan. Data akun disimpan melalui Supabase; data tugas tersinkron ke akunmu.</p>
+          <p class="tiny muted" id="storageInfo">TaskNote tidak menampilkan iklan. Mode Tamu menyimpan data hanya di perangkat ini; login menggunakan penyimpanan akun dan sinkronisasi cloud.</p>
         </section>
       </div>
     </section>
