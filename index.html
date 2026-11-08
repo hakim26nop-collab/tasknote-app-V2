@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="description" content="TaskNote — catatan tugas sekolah pribadi.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+  <title>TaskNote — Tugas Sekolah Pribadi</title>
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <main id="authView" class="auth-shell">
+    <section class="auth-card">
+      <div class="brand"><span class="brand-mark">✓</span><span>TaskNote</span></div>
+      <p class="eyebrow">ASISTEN TUGAS SEKOLAH</p>
+      <h1 id="authTitle">Selamat datang kembali</h1>
+      <p class="muted" id="authSubtitle">Masuk untuk melihat dan mengatur tugasmu.</p>
+      <form id="authForm" class="stack">
+        <label id="nameField" class="field hidden">Nama
+          <input id="displayName" autocomplete="name" placeholder="Nama kamu">
+        </label>
+        <label class="field">Email
+          <input id="email" type="email" autocomplete="email" required placeholder="nama@email.com">
+        </label>
+        <label class="field">Password
+          <input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Minimal 6 karakter">
+        </label>
+        <button class="primary full" id="authSubmit" type="submit">Masuk</button>
+      </form>
+      <p class="auth-switch"><span id="switchText">Belum punya akun?</span> <button id="switchAuth" class="text-button" type="button">Daftar</button></p>
+      <p class="tiny muted">Akun dan tugasmu bersifat pribadi.</p>
+    </section>
+  </main>
+
+  <div id="appView" class="app hidden">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand brand-link" href="#"><span class="brand-mark">✓</span><span>TaskNote</span></a>
+      <button class="nav-item active" data-view="dashboard"><span>⌂</span> Ringkasan</button>
+      <button class="nav-item" data-view="all"><span>▤</span> Semua Tugas</button>
+      <button class="nav-item" data-view="today"><span>◷</span> Hari Ini</button>
+      <button class="nav-item" data-view="upcoming"><span>▦</span> Mendatang</button>
+      <button class="nav-item" data-view="completed"><span>✓</span> Selesai</button>
+      <div class="side-bottom">
+        <button class="nav-item" data-view="settings"><span>⚙</span> Pengaturan</button>
+        <div class="profile-mini"><div class="avatar" id="avatarInitial">T</div><div class="profile-text"><b id="profileName">Pengguna</b><small id="profileEmail">email</small></div></div>
+      </div>
+    </aside>
+
+    <section class="main-area">
+      <header class="topbar">
+        <button class="icon-button mobile-menu" id="menuToggle" aria-label="Buka menu">☰</button>
+        <div class="crumb">TaskNote <span>/</span> <b id="pageTitle">Ringkasan</b></div>
+        <div class="top-actions">
+          <button class="icon-button" id="themeToggle" title="Ganti tema" aria-label="Ganti tema">◐</button>
+          <button class="secondary install-btn hidden" id="installBtn">↓ Instal</button>
+          <button class="icon-button" id="logoutBtn" title="Keluar" aria-label="Keluar">↪</button>
+        </div>
+      </header>
+
+      <div class="content">
+        <section id="dashboardPanel" class="panel">
+          <div class="welcome-row">
+            <div><p class="eyebrow" id="todayLabel">HARI INI</p><h1>Halo, <span id="welcomeName">kamu</span> 👋</h1><p class="muted">Ini ringkasan tugas sekolahmu.</p></div>
+            <button class="primary" id="quickAdd">＋ Tambah Tugas</button>
+          </div>
+          <div class="stats-grid">
+            <article class="stat-card"><span class="stat-icon violet">▤</span><small>Total tugas aktif</small><strong id="statActive">0</strong></article>
+            <article class="stat-card"><span class="stat-icon amber">◷</span><small>Perlu dikerjakan</small><strong id="statTodo">0</strong></article>
+            <article class="stat-card"><span class="stat-icon green">✓</span><small>Selesai</small><strong id="statDone">0</strong></article>
+          </div>
+          <div class="section-heading"><div><h2>Tugas terdekat</h2><p class="muted">Prioritaskan tugas dengan deadline paling dekat.</p></div><button class="text-button" data-goto="all">Lihat semua →</button></div>
+          <div id="dashboardTasks" class="task-list"></div>
+        </section>
+
+        <section id="tasksPanel" class="panel hidden">
+          <div class="page-heading"><div><p class="eyebrow">DAFTAR TUGAS</p><h1 id="listHeading">Semua Tugas</h1><p class="muted">Catat dan pantau tugas sekolahmu.</p></div><button class="primary" id="addTaskBtn">＋ Tambah Tugas</button></div>
+          <div class="toolbar">
+            <input id="searchInput" class="search" type="search" placeholder="Cari nama tugas atau mata pelajaran…">
+            <select id="statusFilter" aria-label="Filter status"><option value="all">Semua status</option><option value="todo">Belum dikerjakan</option><option value="doing">Sedang dikerjakan</option><option value="done">Selesai</option></select>
+            <select id="subjectFilter" aria-label="Filter mata pelajaran"><option value="all">Semua pelajaran</option></select>
+          </div>
+          <div id="taskList" class="task-list"></div>
+        </section>
+
+        <section id="settingsPanel" class="panel hidden">
+          <div class="page-heading"><div><p class="eyebrow">PREFERENSI</p><h1>Pengaturan</h1><p class="muted">Atur akun dan pengalaman TaskNote.</p></div></div>
+          <div class="settings-grid">
+            <article class="setting-card"><h2>Profil</h2><label class="field">Nama tampilan<input id="settingsName" placeholder="Nama kamu"></label><button class="primary" id="saveProfile">Simpan nama</button></article>
+            <article class="setting-card"><h2>Keamanan akun</h2><label class="field">Password baru<input id="newPassword" type="password" minlength="6" placeholder="Minimal 6 karakter"></label><button class="secondary" id="changePassword">Ubah password</button></article>
+            <article class="setting-card"><h2>Mata pelajaran</h2><p class="muted">Kelola daftar mata pelajaran untuk tugasmu.</p><div class="inline-form"><input id="newSubject" placeholder="Contoh: Matematika"><button class="secondary" id="addSubject">Tambah</button></div><div id="subjectChips" class="chips"></div></article>
+            <article class="setting-card"><h2>Backup data</h2><p class="muted">Simpan salinan tugas pribadi dalam format JSON.</p><div class="button-row"><button class="secondary" id="exportBtn">↓ Ekspor JSON</button><label class="secondary file-button">↑ Impor JSON<input id="importFile" type="file" accept="application/json,.json" hidden></label></div></article>
+            <article class="setting-card"><h2>Tampilan</h2><p class="muted">Pilih tema yang nyaman digunakan.</p><button class="secondary" id="settingsTheme">Ganti tema terang/gelap</button></article>
+          </div>
+          <p class="tiny muted">TaskNote tidak menampilkan iklan. Data akun disimpan melalui Supabase; data tugas tersinkron ke akunmu.</p>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="taskDialog" class="task-dialog">
+    <form id="taskForm" method="dialog">
+      <div class="dialog-head"><div><p class="eyebrow">TASKNOTE</p><h2 id="dialogTitle">Tambah Tugas</h2></div><button class="icon-button" type="button" id="closeDialog" aria-label="Tutup">×</button></div>
+      <input id="taskId" type="hidden">
+      <label class="field">Nama tugas<input id="taskTitle" required maxlength="120" placeholder="Contoh: Kerjakan latihan halaman 25"></label>
+      <div class="form-grid">
+        <label class="field">Mata pelajaran<select id="taskSubject"></select></label>
+        <label class="field">Deadline<input id="taskDue" type="date"></label>
+        <label class="field">Prioritas<select id="taskPriority"><option value="normal">Normal</option><option value="high">Tinggi</option><option value="urgent">Mendesak</option></select></label>
+        <label class="field">Status<select id="taskStatus"><option value="todo">Belum dikerjakan</option><option value="doing">Sedang dikerjakan</option><option value="done">Selesai</option></select></label>
+      </div>
+      <label class="field">Catatan (opsional)<textarea id="taskDescription" rows="3" placeholder="Detail atau instruksi tugas…"></textarea></label>
+      <div class="dialog-actions"><button type="button" class="secondary" id="cancelDialog">Batal</button><button type="submit" class="primary" id="saveTask">Simpan tugas</button></div>
+    </form>
+  </dialog>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase-config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
