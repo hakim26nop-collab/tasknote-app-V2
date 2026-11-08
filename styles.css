@@ -676,3 +676,12 @@ body.dark .empty{background:transparent}
 }
 @media(min-width:721px) and (max-width:1024px){#appView .content{padding-left:24px;padding-right:24px}}
 @media(prefers-reduced-motion:reduce){#appView .sidebar,#appView .menu-backdrop{transition:none}}
+
+
+/* Force the navigation to remain a left-side drawer on every viewport */
+#appView aside#sidebar.sidebar{position:fixed!important;top:0!important;left:0!important;right:auto!important;bottom:0!important;width:min(270px,86vw)!important;height:100vh!important;height:100dvh!important;display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;transform:translateX(-110%)!important;z-index:100!important;background:var(--surface)!important;overflow-y:auto!important}
+#appView aside#sidebar.sidebar.open{transform:translateX(0)!important}
+#appView header.topbar button#menuToggle{display:inline-grid!important;visibility:visible!important;place-items:center!important}
+#appView button#menuBackdrop{position:fixed!important;inset:0!important;z-index:99!important;display:block!important;opacity:0!important;visibility:hidden!important}
+#appView.menu-open button#menuBackdrop{opacity:1!important;visibility:visible!important}
+#appView .main-area{margin-left:0!important}
