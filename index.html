@@ -47,7 +47,7 @@
       <button class="nav-item" data-view="completed"><span>✓</span> Selesai</button>
       <div class="side-bottom">
         <button class="nav-item" data-view="settings"><span>⚙</span> Pengaturan</button>
-        <div class="profile-mini"><div class="avatar" id="avatarInitial">T</div><div class="profile-text"><b id="profileName">Pengguna</b><small id="profileEmail">email</small></div></div>
+        <div class="profile-mini"><div class="avatar" id="avatarInitial">T<img id="profileAvatarImage" alt="Foto profil" hidden></div><div class="profile-text"><b id="profileName">Pengguna</b><small id="profileEmail">email</small></div></div>
       </div>
     </aside>
 
@@ -90,7 +90,7 @@
         <section id="settingsPanel" class="panel hidden">
           <div class="page-heading"><div><p class="eyebrow">PREFERENSI</p><h1>Pengaturan</h1><p class="muted">Atur akun dan pengalaman TaskNote.</p></div></div>
           <div class="settings-grid">
-            <article class="setting-card"><h2>Profil</h2><label class="field">Nama tampilan<input id="settingsName" placeholder="Nama kamu"></label><button class="primary" id="saveProfile">Simpan nama</button></article>
+            <article class="setting-card"><h2>Profil</h2><div class="profile-editor"><div class="avatar profile-avatar-large" id="settingsAvatarInitial">T<img id="settingsAvatarImage" alt="Pratinjau foto profil" hidden></div><div><strong>Foto profil</strong><p class="muted">Pilih foto JPG, PNG, atau WebP (maksimal 2 MB).</p></div></div><label class="secondary file-button avatar-upload-label">＋ Pilih foto<input id="avatarFile" type="file" accept="image/jpeg,image/png,image/webp" hidden></label><p class="tiny muted" id="avatarUploadStatus">Foto profil akan tersimpan di akunmu.</p><label class="field">Nama tampilan<input id="settingsName" placeholder="Nama kamu"></label><button class="primary" id="saveProfile">Simpan nama</button></article>
             <article class="setting-card"><h2>Keamanan akun</h2><label class="field">Password baru<input id="newPassword" type="password" minlength="6" placeholder="Minimal 6 karakter"></label><button class="secondary" id="changePassword">Ubah password</button></article>
             <article class="setting-card"><h2>Mata pelajaran</h2><p class="muted">Kelola daftar mata pelajaran untuk tugasmu.</p><div class="inline-form"><input id="newSubject" placeholder="Contoh: Matematika"><button class="secondary" id="addSubject">Tambah</button></div><div id="subjectChips" class="chips"></div></article>
             <article class="setting-card"><h2>Backup data</h2><p class="muted">Simpan salinan tugas pribadi dalam format JSON.</p><div class="button-row"><button class="secondary" id="exportBtn">↓ Ekspor JSON</button><label class="secondary file-button">↑ Impor JSON<input id="importFile" type="file" accept="application/json,.json" hidden></label></div></article>
