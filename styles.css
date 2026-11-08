@@ -624,3 +624,55 @@ body.dark .nav-item{color:#bdc9d8}
 body.dark .nav-item:hover,body.dark .nav-item.active{background:#30445d;color:#c3dcf8}
 body.dark .icon-button{background:#243349;border-color:#3a4b61;color:#edf3fa}
 body.dark .empty{background:transparent}
+
+
+/* Universal off-canvas navigation for laptop, tablet, and phone */
+#appView .sidebar{
+ position:fixed;inset:0 auto 0 0;width:min(270px,86vw);height:100dvh;min-height:0;
+ padding:24px 18px 18px;display:flex;flex-direction:column;align-items:stretch;flex-wrap:nowrap;
+ gap:0;overflow-y:auto;overscroll-behavior:contain;transform:translateX(-105%);
+ transition:transform .24s ease;z-index:30;border-right:1px solid var(--line);border-bottom:0;
+ box-shadow:10px 0 32px rgba(25,38,65,.12)
+}
+#appView .sidebar.open{transform:translateX(0)}
+#appView .brand-link{width:auto;margin:0 0 28px;white-space:nowrap}
+#appView .nav-item{width:100%;justify-content:flex-start;padding:12px 13px;margin:3px 0;font-size:13px;gap:11px}
+#appView .nav-item span{width:20px;font-size:17px}
+#appView .side-bottom{width:100%;display:flex;flex-direction:column;align-items:stretch;gap:8px;margin-top:auto;padding-top:18px}
+#appView .profile-mini{width:100%;margin:10px 0 0;padding:15px 4px 0;border-top:1px solid var(--line)}
+#appView .main-area{margin-left:0;min-width:0}
+#appView .topbar{height:64px;position:sticky;top:0;padding:0 clamp(14px,3vw,32px);gap:12px;z-index:8}
+#appView .mobile-menu{display:inline-grid;place-items:center;flex:0 0 40px;width:40px;height:40px;font-size:20px}
+#appView .crumb{margin-right:auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#appView .top-actions{flex:0 0 auto}
+#appView .menu-backdrop{display:block;position:fixed;inset:0;width:100%;height:100%;padding:0;border:0;background:rgba(15,24,40,.42);opacity:0;visibility:hidden;z-index:29;transition:opacity .2s ease,visibility .2s ease}
+#appView.menu-open .menu-backdrop{opacity:1;visibility:visible}
+#appView .content{width:100%;max-width:1180px;padding:clamp(18px,3vw,38px) clamp(14px,3.5vw,38px) 48px;margin:0 auto}
+#appView .stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+#appView .settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+#appView .task-row,#appView .stat-card,#appView .setting-card{min-width:0}
+@media(max-width:720px){
+ #appView .topbar{height:58px;padding:0 12px}
+ #appView .content{padding:18px 14px 36px}
+ #appView .stats-grid{gap:8px;padding:9px}
+ #appView .stat-card{padding:11px 8px}
+ #appView .stat-card strong{font-size:clamp(19px,5vw,24px)}
+ #appView .stat-card small{font-size:10px;line-height:1.3}
+ #appView .settings-grid{grid-template-columns:minmax(0,1fr)}
+ #appView .welcome-row,#appView .page-heading{gap:12px}
+ #appView .welcome-row>.primary,#appView .page-heading>.primary{width:100%}
+ #appView .toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ #appView .toolbar .search{grid-column:1/-1;width:100%}
+ #appView .toolbar select{width:100%;min-width:0}
+ #appView .task-row{gap:9px}
+ #appView .task-actions{flex-direction:row}
+}
+@media(max-width:380px){
+ #appView .stats-grid{grid-template-columns:1fr}
+ #appView .stat-card{grid-template-columns:auto 1fr;align-items:center}
+ #appView .stat-card strong{grid-column:2}
+ #appView .top-actions{gap:5px}
+ #appView .install-btn{padding:9px 10px;font-size:11px}
+}
+@media(min-width:721px) and (max-width:1024px){#appView .content{padding-left:24px;padding-right:24px}}
+@media(prefers-reduced-motion:reduce){#appView .sidebar,#appView .menu-backdrop{transition:none}}
