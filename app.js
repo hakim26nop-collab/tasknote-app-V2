@@ -185,7 +185,7 @@
     const status=$("avatarUploadStatus"),picker=$("avatarFile");status.textContent="Mengunggah foto profil…";picker.disabled=true;
     try{
       const ext=file.type==="image/png"?"png":file.type==="image/webp"?"webp":"jpg",path=user.id+"/profile-"+Date.now()+"."+ext;
-      const {error:uploadError}=await supabaseClient.storage.from("avatars").upload(path,file,{upsert:true,contentType:file.type,cacheControl:"3600"});if(uploadError)throw uploadError;
+      const {error:uploadError}=await supabaseClient.storage.from("avatars").upload(path,file,{upsert:false,contentType:file.type,cacheControl:"3600"});if(uploadError)throw uploadError;
       const {data:publicData}=supabaseClient.storage.from("avatars").getPublicUrl(path),avatarUrl=publicData.publicUrl;
       const {data:updateData,error:updateError}=await supabaseClient.auth.updateUser({data:{avatar_url:avatarUrl}});if(updateError)throw updateError;
       user=updateData.user||user;renderAvatar(avatarUrl);status.textContent="Foto profil berhasil diperbarui.";toast("Foto profil tersimpan.");
