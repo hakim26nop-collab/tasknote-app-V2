@@ -723,3 +723,25 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 body.dark #appView .stats-grid{box-shadow:0 8px 26px rgba(0,0,0,.14)}
 body.dark #appView .task-list{border-color:#3a4b61}
 body.dark #appView .task-row:hover{background:#293a50}
+
+
+/* Custom welcome banner */
+#appView .welcome-row.has-custom-banner{
+  position:relative;isolation:isolate;overflow:hidden;
+  min-height:190px;padding:clamp(20px,3vw,34px);
+  border:1px solid rgba(133,157,188,.25);border-radius:18px;
+  background-image:linear-gradient(90deg,rgba(12,29,53,.78),rgba(18,43,72,.48) 65%,rgba(18,43,72,.25)),var(--welcome-banner-image);
+  background-size:cover;background-position:center;
+  box-shadow:0 10px 28px rgba(25,48,78,.13);
+}
+#appView .welcome-row.has-custom-banner .eyebrow,
+#appView .welcome-row.has-custom-banner h1,
+#appView .welcome-row.has-custom-banner .muted{color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.28)}
+#appView .welcome-row.has-custom-banner .primary{flex-shrink:0}
+@media(max-width:720px){
+ #appView .welcome-row.has-custom-banner{min-height:210px;padding:20px;align-items:flex-start}
+}
+body.dark #appView .welcome-row.has-custom-banner{
+ border-color:rgba(180,202,230,.18);
+ box-shadow:0 10px 28px rgba(0,0,0,.22)
+}
