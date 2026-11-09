@@ -685,3 +685,41 @@ body.dark .empty{background:transparent}
 #appView button#menuBackdrop{position:fixed!important;inset:0!important;z-index:99!important;display:block!important;opacity:0!important;visibility:hidden!important}
 #appView.menu-open button#menuBackdrop{opacity:1!important;visibility:visible!important}
 #appView .main-area{margin-left:0!important}
+
+
+/* Final polish: consistent spacing, readable task cards, and accessible controls */
+:root{--radius-card:16px}
+button,input,select,textarea{font:inherit}
+button{touch-action:manipulation}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+ outline:3px solid rgba(37,99,235,.28);outline-offset:2px
+}
+#appView .content{max-width:1120px}
+#appView .welcome-row{align-items:center}
+#appView .stats-grid{box-shadow:0 8px 26px rgba(29,55,91,.055)}
+#appView .stat-card{transition:background .18s ease,transform .18s ease}
+#appView .task-list{overflow:hidden}
+#appView .task-row{align-items:flex-start;gap:13px}
+#appView .task-main{min-width:0;overflow-wrap:anywhere}
+#appView .task-title{line-height:1.5;font-weight:650}
+#appView .task-meta{line-height:1.55;flex-wrap:wrap}
+#appView .task-actions{flex-shrink:0}
+#appView .setting-card{min-width:0}
+#appView .toolbar{gap:10px}
+#appView .menu-backdrop{cursor:pointer}
+#appView .sidebar{padding-top:max(22px,env(safe-area-inset-top));padding-bottom:max(18px,env(safe-area-inset-bottom))}
+#appView .topbar{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+@media(max-width:720px){
+ #appView .welcome-row{align-items:stretch}
+ #appView .task-row{display:grid;grid-template-columns:24px minmax(0,1fr);align-items:start}
+ #appView .task-actions{grid-column:2;justify-content:flex-start}
+ #appView .task-meta{font-size:11px}
+ #appView .toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ #appView .setting-card{padding:17px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+body.dark #appView .stats-grid{box-shadow:0 8px 26px rgba(0,0,0,.14)}
+body.dark #appView .task-list{border-color:#3a4b61}
+body.dark #appView .task-row:hover{background:#293a50}
