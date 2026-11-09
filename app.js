@@ -110,7 +110,7 @@
     currentView=view;const names={dashboard:"Ringkasan",all:"Semua Tugas",today:"Hari Ini",upcoming:"Mendatang",completed:"Tugas Selesai",settings:"Pengaturan"};
     $("pageTitle").textContent=names[view];$("listHeading").textContent=names[view]||"Semua Tugas";
     $("dashboardPanel").classList.toggle("hidden",view!=="dashboard");$("tasksPanel").classList.toggle("hidden",!["all","today","upcoming","completed"].includes(view));$("settingsPanel").classList.toggle("hidden",view!=="settings");
-    render();$("sidebar").classList.remove("open");$("sidebar").style.setProperty("transform","translateX(-110%)","important");$("appView").classList.remove("menu-open");$("menuBackdrop").style.pointerEvents="none";
+    render();$("sidebar").classList.remove("open");$("sidebar").style.setProperty("transform","translateX(-110%)","important");$("appView").classList.remove("menu-open");$("menuBackdrop").style.setProperty("opacity","0","important");$("menuBackdrop").style.setProperty("visibility","hidden","important");$("menuBackdrop").style.pointerEvents="none";
   }
   document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>goto(b.dataset.view)));
   document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>goto(b.dataset.goto)));
