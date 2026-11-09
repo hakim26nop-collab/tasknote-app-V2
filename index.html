@@ -111,7 +111,7 @@
       <label class="field">Nama tugas<input id="taskTitle" required maxlength="120" placeholder="Contoh: Kerjakan latihan halaman 25"></label>
       <div class="form-grid">
         <label class="field">Mata pelajaran<input id="taskSubject" list="subjectSuggestions" placeholder="Ketik nama mapel, misalnya Matematika"><datalist id="subjectSuggestions"></datalist></label>
-        <label class="field">Deadline<input id="taskDue" type="date"></label>
+        <label class="field">Tanggal deadline<input id="taskDue" type="date"></label><label class="field">Jam deadline<input id="taskDueTime" type="time"><small class="tiny muted">Isi jam agar pengingat 24 jam sebelumnya bisa dijadwalkan.</small></label>
         <label class="field">Prioritas<select id="taskPriority"><option value="low">Rendah</option><option value="medium" selected>Sedang</option><option value="high">Tinggi</option></select></label>
         <label class="field">Status<select id="taskStatus"><option value="todo">Belum dikerjakan</option><option value="doing">Sedang dikerjakan</option><option value="done">Selesai</option></select></label>
       </div>
