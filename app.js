@@ -251,7 +251,7 @@
         $("cropTitle").textContent=type==="profile"?"Pangkas foto profil":"Pangkas banner sambutan";
         $("cropHelp").textContent="Geser gambar untuk mengatur potongan. Cubit dengan dua jari untuk memperbesar.";
         cropFrame.classList.toggle("banner-crop",type==="banner");cropPreview.src=reader.result;
-        $("cropZoom").value=1;cropDialog.showModal();requestAnimationFrame(updateCropPreview);resolve(true);
+        cropDialog.showModal();requestAnimationFrame(updateCropPreview);resolve(true);
       };img.src=reader.result};reader.readAsDataURL(file);
     });
   }
