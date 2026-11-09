@@ -265,8 +265,8 @@
     if(sw/sh>targetRatio)sw=sh*targetRatio;else sh=sw/targetRatio;
     const zoom=cropState.zoom;sw/=zoom;sh/=zoom;
     const maxX=img.width-sw,maxY=img.height-sh;
-    const sx=Math.max(0,Math.min(maxX,maxX/2-cropState.x*(maxX/2)));
-    const sy=Math.max(0,Math.min(maxY,maxY/2-cropState.y*(maxY/2)));
+    const sx=Math.max(0,Math.min(maxX,maxX/2+cropState.x*(maxX/2)));
+    const sy=Math.max(0,Math.min(maxY,maxY/2+cropState.y*(maxY/2)));
     const canvas=document.createElement("canvas");canvas.width=type==="profile"?800:1600;canvas.height=type==="profile"?800:620;
     canvas.getContext("2d").drawImage(img,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
     return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error("Gagal memproses crop gambar.")),"image/jpeg",.88));
