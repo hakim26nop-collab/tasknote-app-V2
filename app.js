@@ -11,6 +11,7 @@
   let authMode = "login", currentView = "dashboard", deferredPrompt = null;
   const statusLabel = {todo:"Belum dikerjakan",doing:"Sedang dikerjakan",done:"Selesai"};
   const dateFmt = (d) => d ? new Date(String(d).length===10 ? d+"T00:00:00" : d).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"}) : "Tanpa deadline";
+  const localDateKey = (date = new Date()) => { const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,"0"),d=String(date.getDate()).padStart(2,"0"); return `${y}-${m}-${d}`; };
   function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2600)}
   function setAuthMode(mode){authMode=mode;const signup=mode==="signup";$("authTitle").textContent=signup?"Buat akun TaskNote":"Selamat datang kembali";$("authSubtitle").textContent=signup?"Mulai catat tugas sekolahmu secara pribadi.":"Masuk untuk melihat dan mengatur tugasmu."; $("nameField").classList.toggle("hidden",!signup);$("displayName").required=signup;$("authSubmit").textContent=signup?"Buat akun":"Masuk";$("switchText").textContent=signup?"Sudah punya akun?":"Belum punya akun?";$("switchAuth").textContent=signup?"Masuk":"Daftar"}
   function showApp(show){$("authView").classList.toggle("hidden",show);$("appView").classList.toggle("hidden",!show)}
@@ -97,7 +98,7 @@
     renderTaskList();renderSubjects();document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===currentView));
   }
   function renderTaskList(){
-    let list=tasks.slice(),today=new Date().toISOString().slice(0,10),q=($("searchInput").value||"").toLowerCase(),status=$("statusFilter").value,subject=$("subjectFilter").value;
+    let list=tasks.slice(),today=localDateKey(),q=($("searchInput").value||"").toLowerCase(),status=$("statusFilter").value,subject=$("subjectFilter").value;
     if(currentView==="today")list=list.filter(t=>t.deadline===today&&t.status!=="done");
     if(currentView==="upcoming")list=list.filter(t=>t.deadline>today&&t.status!=="done");
     if(currentView==="completed")list=list.filter(t=>t.status==="done");
