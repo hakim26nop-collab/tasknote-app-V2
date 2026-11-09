@@ -110,7 +110,7 @@
     currentView=view;const names={dashboard:"Ringkasan",all:"Semua Tugas",today:"Hari Ini",upcoming:"Mendatang",completed:"Tugas Selesai",settings:"Pengaturan"};
     $("pageTitle").textContent=names[view];$("listHeading").textContent=names[view]||"Semua Tugas";
     $("dashboardPanel").classList.toggle("hidden",view!=="dashboard");$("tasksPanel").classList.toggle("hidden",!["all","today","upcoming","completed"].includes(view));$("settingsPanel").classList.toggle("hidden",view!=="settings");
-    render();$("sidebar").classList.remove("open");$("appView").classList.remove("menu-open");
+    render();$("sidebar").classList.remove("open");$("sidebar").style.setProperty("transform","translateX(-110%)","important");$("appView").classList.remove("menu-open");$("menuBackdrop").style.pointerEvents="none";
   }
   document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>goto(b.dataset.view)));
   document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>goto(b.dataset.goto)));
@@ -226,10 +226,20 @@
   function toggleTheme(){document.body.classList.toggle("dark");localStorage.setItem("tasknote-theme",document.body.classList.contains("dark")?"dark":"light")}
   if(localStorage.getItem("tasknote-theme")==="dark")document.body.classList.add("dark");
   $("themeToggle").addEventListener("click",toggleTheme);$("settingsTheme").addEventListener("click",toggleTheme);
-  const toggleMenu=()=>{$("sidebar").classList.toggle("open");$("appView").classList.toggle("menu-open");$("menuToggle").setAttribute("aria-expanded",$("appView").classList.contains("menu-open")?"true":"false");};
+  // Force the navigation into a real off-canvas drawer independent of stylesheet cache.
+  const drawer=$("sidebar"), backdrop=$("menuBackdrop"), menuButton=$("menuToggle");
+  const forceStyle=(el,styles)=>Object.entries(styles).forEach(([k,v])=>el.style.setProperty(k,v,"important"));
+  forceStyle(drawer,{position:"fixed",top:"0",left:"0",right:"auto",bottom:"0",width:"min(270px,86vw)",height:"100vh",display:"flex","flex-direction":"column","flex-wrap":"nowrap","align-items":"stretch",transform:"translateX(-110%)", "z-index":"100", "overflow-y":"auto",background:"var(--surface)"});
+  forceStyle(drawer.querySelector(".brand-link"),{width:"auto",margin:"0 0 28px"});
+  drawer.querySelectorAll(".nav-item").forEach(el=>forceStyle(el,{width:"100%","justify-content":"flex-start","flex-shrink":"0"}));
+  forceStyle(drawer.querySelector(".side-bottom"),{width:"100%",display:"flex","flex-direction":"column","align-items":"stretch","margin-top":"auto"});
+  forceStyle(backdrop,{position:"fixed",inset:"0",display:"block","z-index":"99",opacity:"0",visibility:"hidden","pointer-events":"none",background:"rgba(15,24,40,.42)"});
+  forceStyle(menuButton,{display:"inline-grid",visibility:"visible","place-items":"center"});
+  const setDrawer=(open)=>{drawer.style.setProperty("transform",open?"translateX(0)":"translateX(-110%)","important");backdrop.style.setProperty("opacity",open?"1":"0","important");backdrop.style.setProperty("visibility",open?"visible":"hidden","important");backdrop.style.pointerEvents=open?"auto":"none";$("appView").classList.toggle("menu-open",open);menuButton.setAttribute("aria-expanded",open?"true":"false");};
+  const toggleMenu=()=>setDrawer(!$("appView").classList.contains("menu-open"));
   $("menuToggle").addEventListener("click",toggleMenu);
   $("menuBackdrop").addEventListener("click",toggleMenu);
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("appView").classList.contains("menu-open"))toggleMenu();});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("appView").classList.contains("menu-open"))setDrawer(false);});
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBtn").classList.remove("hidden")});
   $("installBtn").addEventListener("click",async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$("installBtn").classList.add("hidden")});
   if("serviceWorker" in navigator&&location.protocol!=="file:")window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(console.warn));
