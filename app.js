@@ -99,7 +99,8 @@
   function subjectName(id){return subjects.find(s=>String(s.id)===String(id))?.name||"Tanpa mata pelajaran"}
   function taskMarkup(t){
     const priority=t.priority||"medium";
-    return '<article class="task-row '+(t.status==="done"?"done":"")+'"><button class="task-check '+(t.status==="done"?"checked":"")+'" data-toggle="'+esc(t.id)+'" aria-label="Ubah status">'+(t.status==="done"?"✓":"")+'</button><div class="task-main"><div class="task-title">'+esc(t.title)+'</div><div class="task-meta"><span class="pill">'+esc(subjectName(t.subject_id))+'</span><span>'+(t.deadline?"Deadline "+dateFmt(t.deadline):"Tanpa deadline")+'</span><span class="pill '+(priority==="high"?"high":"")+'">'+(priority==="high"?"Tinggi":priority==="low"?"Rendah":"Sedang")+'</span><span>'+ (statusLabel[t.status]||statusLabel.todo)+'</span></div>'+(t.description?'<div class="task-meta">'+esc(t.description)+'</div>':"")+'</div><div class="task-actions"><button class="small-action" data-edit="'+esc(t.id)+'">Edit</button><button class="small-action" data-delete="'+esc(t.id)+'">Hapus</button></div></article>';
+    const deadlineLabel=t.deadline?"Deadline "+dateFmt(t.deadline)+(t.deadline_time?" • "+String(t.deadline_time).slice(0,5):""):"Tanpa deadline";
+    return '<article class="task-row '+(t.status==="done"?"done":"")+'"><button class="task-check '+(t.status==="done"?"checked":"")+'" data-toggle="'+esc(t.id)+'" aria-label="Ubah status">'+(t.status==="done"?"✓":"")+'</button><div class="task-main"><div class="task-title">'+esc(t.title)+'</div><div class="task-meta"><span class="pill">'+esc(subjectName(t.subject_id))+'</span><span>'+esc(deadlineLabel)+'</span><span class="pill '+(priority==="high"?"high":"")+'">'+(priority==="high"?"Tinggi":priority==="low"?"Rendah":"Sedang")+'</span><span>'+ (statusLabel[t.status]||statusLabel.todo)+'</span></div>'+(t.description?'<div class="task-meta">'+esc(t.description)+'</div>':"")+'</div><div class="task-actions"><button class="small-action" data-edit="'+esc(t.id)+'">Edit</button><button class="small-action" data-delete="'+esc(t.id)+'">Hapus</button></div></article>';
   }
   function render(){
     const active=tasks.filter(t=>t.status!=="done"),done=tasks.filter(t=>t.status==="done");
@@ -130,7 +131,7 @@
   function openTask(t){
     $("taskForm").reset();$("taskId").value=t?.id||"";$("dialogTitle").textContent=t?"Edit Tugas":"Tambah Tugas";
     $("taskTitle").value=t?.title||"";$("taskSubject").value=t?.subject_id?subjectName(t.subject_id):"";
-    $("taskDue").value=t?.deadline?String(t.deadline).slice(0,10):"";$("taskPriority").value=t?.priority||"medium";
+    $("taskDue").value=t?.deadline?String(t.deadline).slice(0,10):"";$("taskDueTime").value=t?.deadline_time?String(t.deadline_time).slice(0,5):"";$("taskPriority").value=t?.priority||"medium";
     $("taskStatus").value=t?.status||"todo";$("taskDescription").value=t?.description||"";$("taskDialog").showModal();
   }
   ["quickAdd","addTaskBtn"].forEach(id=>$(id).addEventListener("click",()=>openTask()));
@@ -146,7 +147,7 @@
     e.preventDefault();const id=$("taskId").value;
     try{
       const subjectId=await getOrCreateSubject($("taskSubject").value);
-      const payload={title:$("taskTitle").value.trim(),subject_id:subjectId,deadline:$("taskDue").value||null,priority:$("taskPriority").value,status:$("taskStatus").value,description:$("taskDescription").value.trim()||null};
+      const payload={title:$("taskTitle").value.trim(),subject_id:subjectId,deadline:$("taskDue").value||null,deadline_time:$("taskDue").value?($("taskDueTime").value||null):null,priority:$("taskPriority").value,status:$("taskStatus").value,description:$("taskDescription").value.trim()||null};
       if(isGuest){
         if(id){const i=tasks.findIndex(t=>String(t.id)===String(id));if(i>=0)tasks[i]={...tasks[i],...payload}}
         else tasks.push({...payload,id:(crypto.randomUUID?crypto.randomUUID():"guest-"+Date.now()),created_at:new Date().toISOString()});
