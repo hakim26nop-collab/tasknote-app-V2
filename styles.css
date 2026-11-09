@@ -767,3 +767,19 @@ body.dark .crop-dialog{background:#243349;border-color:#3a4b61}
 
 /* Final override: top controls are part of normal document flow */
 #appView header.topbar{position:static!important;top:auto!important}
+
+
+/* Respons sentuhan pada perangkat layar sentuh */
+@media (hover:none) and (pointer:coarse){
+  button,a,label,[role="button"],input,select,textarea{
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+  }
+  button{
+    transition:none!important;
+  }
+  button:active{
+    transform:scale(.985);
+    filter:brightness(.97);
+  }
+}
