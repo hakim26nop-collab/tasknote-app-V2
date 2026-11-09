@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
   <link rel="apple-touch-icon" href="./icons/icon.svg">
-  <link rel="stylesheet" href="./styles.css?v=polish1">
+  <link rel="stylesheet" href="./styles.css?v=welcome-banner1">
   <title>TaskNote — Tugas Sekolah Pribadi</title>
 </head>
 <body>
@@ -96,7 +96,7 @@
             <article class="setting-card" data-account-only><h2>Keamanan akun</h2><label class="field">Password baru<input id="newPassword" type="password" minlength="6" placeholder="Minimal 6 karakter"></label><button class="secondary" id="changePassword">Ubah password</button></article>
             <article class="setting-card"><h2>Mata pelajaran</h2><p class="muted">Kelola daftar mata pelajaran untuk tugasmu.</p><div class="inline-form"><input id="newSubject" placeholder="Contoh: Matematika"><button class="secondary" id="addSubject">Tambah</button></div><div id="subjectChips" class="chips"></div></article>
             <article class="setting-card"><h2>Backup data</h2><p class="muted">Simpan salinan tugas pribadi dalam format JSON.</p><div class="button-row"><button class="secondary" id="exportBtn">↓ Ekspor JSON</button><label class="secondary file-button">↑ Impor JSON<input id="importFile" type="file" accept="application/json,.json" hidden></label></div></article>
-            <article class="setting-card"><h2>Tampilan</h2><p class="muted">Pilih tema yang nyaman digunakan.</p><button class="secondary" id="settingsTheme">Ganti tema terang/gelap</button></article>
+            <article class="setting-card"><h2>Banner sambutan</h2><p class="muted">Pasang gambar sendiri sebagai latar di balik ucapan selamat datang.</p><label class="secondary file-button">＋ Pilih gambar<input id="welcomeBannerFile" type="file" accept="image/jpeg,image/png,image/webp" hidden></label><button class="secondary" id="removeWelcomeBanner" type="button">Hapus banner</button><p class="tiny muted" id="welcomeBannerStatus">Gambar disimpan di perangkat dan browser ini.</p></article><article class="setting-card"><h2>Tampilan</h2><p class="muted">Pilih tema yang nyaman digunakan.</p><button class="secondary" id="settingsTheme">Ganti tema terang/gelap</button></article>
           </div>
           <p class="tiny muted" id="storageInfo">TaskNote tidak menampilkan iklan. Mode Tamu menyimpan data hanya di perangkat ini; login menggunakan penyimpanan akun dan sinkronisasi cloud.</p>
         </section>
