@@ -783,3 +783,20 @@ body.dark .crop-dialog{background:#243349;border-color:#3a4b61}
     filter:brightness(.97);
   }
 }
+
+
+/* Keep the longer task form usable on short mobile screens */
+.task-dialog{
+  max-height:calc(100dvh - 24px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  margin:auto;
+}
+@supports not (height:100dvh){
+  .task-dialog{max-height:calc(100vh - 24px)}
+}
+@media(max-width:600px){
+  .task-dialog{width:calc(100% - 20px);max-height:calc(100dvh - 16px);border-radius:16px}
+  .task-dialog form{padding:18px 16px;gap:12px}
+  .task-dialog .dialog-actions{position:sticky;bottom:0;padding:10px 0 2px;background:var(--surface)}
+}
