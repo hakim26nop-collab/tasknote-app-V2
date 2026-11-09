@@ -13,6 +13,16 @@
   const dateFmt = (d) => d ? new Date(String(d).length===10 ? d+"T00:00:00" : d).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"}) : "Tanpa deadline";
   const localDateKey = (date = new Date()) => { const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,"0"),d=String(date.getDate()).padStart(2,"0"); return `${y}-${m}-${d}`; };
   function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2600)}
+  const WELCOME_BANNER_KEY = "tasknote_welcome_banner_v1";
+  function applyWelcomeBanner(){
+    const el=document.querySelector("#dashboardPanel .welcome-row");
+    if(!el)return;
+    const saved=localStorage.getItem(WELCOME_BANNER_KEY);
+    el.classList.toggle("has-custom-banner",!!saved);
+    if(saved)el.style.setProperty("--welcome-banner-image",'url("'+saved+'")');
+    else el.style.removeProperty("--welcome-banner-image");
+    $("welcomeBannerStatus").textContent=saved?"Banner tersimpan di perangkat ini.":"Gambar disimpan di perangkat dan browser ini.";
+  }
   function setAuthMode(mode){authMode=mode;const signup=mode==="signup";$("authTitle").textContent=signup?"Buat akun TaskNote":"Selamat datang kembali";$("authSubtitle").textContent=signup?"Mulai catat tugas sekolahmu secara pribadi.":"Masuk untuk melihat dan mengatur tugasmu."; $("nameField").classList.toggle("hidden",!signup);$("displayName").required=signup;$("authSubmit").textContent=signup?"Buat akun":"Masuk";$("switchText").textContent=signup?"Sudah punya akun?":"Belum punya akun?";$("switchAuth").textContent=signup?"Masuk":"Daftar"}
   function showApp(show){$("authView").classList.toggle("hidden",show);$("appView").classList.toggle("hidden",!show)}
   function guestData(){try{return JSON.parse(localStorage.getItem(GUEST_KEY)||"{}")}catch(_){return {}}}
@@ -208,6 +218,25 @@
     }catch(err){status.textContent="Foto belum berhasil disimpan.";toast(err.message||"Gagal mengunggah foto.")}
     finally{picker.disabled=false;e.target.value=""}
   });
+  $("welcomeBannerFile").addEventListener("change",async e=>{
+    const file=e.target.files&&e.target.files[0];if(!file)return;
+    if(!["image/jpeg","image/png","image/webp"].includes(file.type)){toast("Pilih gambar JPG, PNG, atau WebP.");e.target.value="";return}
+    if(file.size>8*1024*1024){toast("Ukuran gambar maksimal 8 MB.");e.target.value="";return}
+    const status=$("welcomeBannerStatus");status.textContent="Menyiapkan banner…";
+    try{
+      const dataUrl=await new Promise((resolve,reject)=>{
+        const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error("Gambar gagal dibaca."));reader.readAsDataURL(file);
+      });
+      const image=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error("Gambar tidak valid."));img.src=dataUrl});
+      const scale=Math.min(1,1600/image.width,700/image.height),canvas=document.createElement("canvas");
+      canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));
+      canvas.getContext("2d").drawImage(image,0,0,canvas.width,canvas.height);
+      const compressed=canvas.toDataURL("image/jpeg",0.82);
+      localStorage.setItem(WELCOME_BANNER_KEY,compressed);applyWelcomeBanner();toast("Banner sambutan berhasil dipasang.");
+    }catch(err){status.textContent="Banner gagal disimpan. Coba gambar lain.";toast(err.message||"Gagal menyimpan banner.")}
+    finally{e.target.value=""}
+  });
+  $("removeWelcomeBanner").addEventListener("click",()=>{localStorage.removeItem(WELCOME_BANNER_KEY);applyWelcomeBanner();toast("Banner sambutan dihapus.")});
   $("saveProfile").addEventListener("click",async()=>{
     const name=$("settingsName").value.trim();if(!name)return toast("Nama tidak boleh kosong.");
     if(isGuest){localStorage.setItem(GUEST_PROFILE_KEY,JSON.stringify({name}));$("profileName").textContent=name;$("welcomeName").textContent=name;setAvatarInitial("avatarInitial",name[0].toUpperCase());setAvatarInitial("settingsAvatarInitial",name[0].toUpperCase());return toast("Nama profil tamu diperbarui.")}
