@@ -215,9 +215,7 @@
   function updateCropPreview(){
     const overflow=cropOverflow();
     cropPreview.style.transform="translate("+(-cropState.x*overflow.x)+"px,"+(-cropState.y*overflow.y)+"px) scale("+cropState.zoom+")";
-    $("cropZoom").value=String(cropState.zoom);
   }
-  $("cropZoom").addEventListener("input",()=>{cropState.zoom=Number($("cropZoom").value);updateCropPreview()});
   const pointerDistance=points=>{const p=[...points.values()];return p.length<2?0:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)};
   cropFrame.addEventListener("pointerdown",e=>{
     if(!pendingImageCrop)return;
