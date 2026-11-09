@@ -175,7 +175,21 @@
     const {error}=await supabaseClient.from("subjects").insert({name,user_id:user.id});if(error){toast(error.message);return}
     $("newSubject").value="";await loadSubjects();toast("Mata pelajaran ditambahkan.");
   });
-  function renderAvatar(url){["profileAvatarImage","settingsAvatarImage"].forEach(id=>{const img=$(id);if(!img)return;if(url){img.src=url;img.hidden=false;img.parentElement.classList.add("has-photo")}else{img.removeAttribute("src");img.hidden=true;img.parentElement.classList.remove("has-photo")}})}
+  function renderAvatar(url){
+    ["profileAvatarImage","settingsAvatarImage"].forEach(id=>{
+      const img=$(id);if(!img)return;
+      const avatar=img.parentElement;
+      img.onload=()=>{img.hidden=false;img.style.display="block";avatar.classList.add("has-photo")};
+      img.onerror=()=>{img.hidden=true;img.style.display="none";avatar.classList.remove("has-photo");console.warn("Foto profil gagal dimuat:",url)};
+      if(url){
+        img.hidden=false;img.style.display="block";img.style.visibility="visible";
+        img.src=url;
+        if(img.complete&&img.naturalWidth>0){avatar.classList.add("has-photo")}
+      }else{
+        img.onload=null;img.onerror=null;img.removeAttribute("src");img.hidden=true;img.style.display="none";avatar.classList.remove("has-photo");
+      }
+    });
+  }
   $("avatarFile").addEventListener("change",async e=>{
     const file=e.target.files&&e.target.files[0];if(!file)return;
     if(isGuest){toast("Foto profil tersedia setelah login.");e.target.value="";return}
