@@ -76,6 +76,7 @@
     renderAvatar(avatar);if(isGuest)$("settingsName").value=name;
     $("todayLabel").textContent=new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"}).toUpperCase();
     render();
+    applyWelcomeBanner();
   }
   async function loadSubjects(){
     const {data,error}=await supabaseClient.from("subjects").select("id,name").order("name");
