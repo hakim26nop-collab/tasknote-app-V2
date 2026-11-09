@@ -763,3 +763,7 @@ body.dark .crop-dialog{background:#243349;border-color:#3a4b61}
 
 /* Let the top controls scroll away with the page instead of staying fixed */
 #appView .topbar{position:relative!important;top:auto!important}
+
+
+/* Final override: top controls are part of normal document flow */
+#appView header.topbar{position:static!important;top:auto!important}
