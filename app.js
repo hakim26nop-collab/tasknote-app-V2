@@ -340,6 +340,8 @@
   $("themeToggle").addEventListener("click",toggleTheme);$("settingsTheme").addEventListener("click",toggleTheme);
   // Force the navigation into a real off-canvas drawer independent of stylesheet cache.
   const drawer=$("sidebar"), backdrop=$("menuBackdrop"), menuButton=$("menuToggle");
+  const topbar=$("appView").querySelector(".topbar");
+  if(topbar)topbar.style.setProperty("position","static","important");
   const forceStyle=(el,styles)=>Object.entries(styles).forEach(([k,v])=>el.style.setProperty(k,v,"important"));
   forceStyle(drawer,{position:"fixed",top:"0",left:"0",right:"auto",bottom:"0",width:"min(270px,86vw)",height:"100vh",display:"flex","flex-direction":"column","flex-wrap":"nowrap","align-items":"stretch",transform:"translateX(-110%)", "z-index":"100", "overflow-y":"auto",background:"var(--surface)"});
   forceStyle(drawer.querySelector(".brand-link"),{width:"auto",margin:"0 0 28px"});
