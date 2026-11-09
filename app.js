@@ -202,39 +202,71 @@
       }
     });
   }
+  let pendingImageCrop=null;
+  const cropDialog=$("imageCropDialog"),cropPreview=$("cropPreview"),cropFrame=$("cropFrame");
+  function updateCropPreview(){
+    const zoom=Number($("cropZoom").value),x=Number($("cropX").value),y=Number($("cropY").value);
+    cropPreview.style.transform="scale("+zoom+") translate("+(-x/2)+"%, "+(-y/2)+"%)";
+  }
+  ["cropZoom","cropX","cropY"].forEach(id=>$(id).addEventListener("input",updateCropPreview));
+  function openImageCrop(file,type){
+    return new Promise((resolve,reject)=>{
+      const reader=new FileReader();reader.onerror=()=>reject(Error("Gambar gagal dibaca."));
+      reader.onload=()=>{const img=new Image();img.onerror=()=>reject(Error("Gambar tidak valid."));img.onload=()=>{
+        pendingImageCrop={file,type,img};$("cropTitle").textContent=type==="profile"?"Atur foto profil":"Atur banner sambutan";
+        $("cropHelp").textContent=type==="profile"?"Sesuaikan posisi foto dalam bingkai persegi.":"Sesuaikan posisi gambar dalam bingkai banner lebar.";
+        cropFrame.classList.toggle("banner-crop",type==="banner");cropPreview.src=reader.result;
+        $("cropZoom").value=1;$("cropX").value=0;$("cropY").value=0;updateCropPreview();cropDialog.showModal();
+      };img.src=reader.result};reader.readAsDataURL(file);
+    });
+  }
+  function cancelImageCrop(){pendingImageCrop=null;if(cropDialog.open)cropDialog.close()}
+  $("cancelCrop").addEventListener("click",cancelImageCrop);$("cancelCropBtn").addEventListener("click",cancelImageCrop);
+  function makeCroppedBlob(){
+    const {img,type}=pendingImageCrop,targetRatio=type==="profile"?1:1600/620;
+    let sw=img.width,sh=img.height;
+    if(sw/sh>targetRatio)sw=sh*targetRatio;else sh=sw/targetRatio;
+    const zoom=Number($("cropZoom").value);sw/=zoom;sh/=zoom;
+    const maxX=img.width-sw,maxY=img.height-sh;
+    const sx=Math.max(0,Math.min(maxX,maxX/2+(Number($("cropX").value)/100)*(maxX/2)));
+    const sy=Math.max(0,Math.min(maxY,maxY/2+(Number($("cropY").value)/100)*(maxY/2)));
+    const canvas=document.createElement("canvas");canvas.width=type==="profile"?800:1600;canvas.height=type==="profile"?800:620;
+    canvas.getContext("2d").drawImage(img,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
+    return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error("Gagal memproses crop gambar.")),"image/jpeg",.88));
+  }
+  $("confirmCrop").addEventListener("click",async()=>{
+    if(!pendingImageCrop)return;
+    const {type}=pendingImageCrop,button=$("confirmCrop");button.disabled=true;button.textContent="Memproses…";
+    try{
+      const blob=await makeCroppedBlob();cropDialog.close();pendingImageCrop=null;
+      if(type==="banner"){
+        const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error("Gambar gagal dibaca."));reader.readAsDataURL(blob)});
+        localStorage.setItem(WELCOME_BANNER_KEY,dataUrl);applyWelcomeBanner();toast("Banner berhasil dipasang.");
+      }else{
+        const status=$("avatarUploadStatus"),picker=$("avatarFile");status.textContent="Mengunggah foto profil…";picker.disabled=true;
+        try{
+          const path=user.id+"/profile-"+Date.now()+".jpg";
+          const {error:uploadError}=await supabaseClient.storage.from("avatars").upload(path,blob,{upsert:false,contentType:"image/jpeg",cacheControl:"3600"});if(uploadError)throw uploadError;
+          const {data:publicData}=supabaseClient.storage.from("avatars").getPublicUrl(path),avatarUrl=publicData.publicUrl;
+          const {data:updateData,error:updateError}=await supabaseClient.auth.updateUser({data:{avatar_url:avatarUrl}});if(updateError)throw updateError;
+          user=updateData.user||user;renderAvatar(avatarUrl);status.textContent="Foto profil berhasil diperbarui.";toast("Foto profil tersimpan.");
+        }catch(err){status.textContent="Foto belum berhasil disimpan.";toast(err.message||"Gagal mengunggah foto.")}finally{picker.disabled=false}
+      }
+    }catch(err){toast(err.message||"Gagal memproses gambar.")}
+    finally{button.disabled=false;button.textContent="Gunakan gambar"}
+  });
   $("avatarFile").addEventListener("change",async e=>{
     const file=e.target.files&&e.target.files[0];if(!file)return;
     if(isGuest){toast("Foto profil tersedia setelah login.");e.target.value="";return}
-    const allowed=["image/jpeg","image/png","image/webp"];
-    if(!allowed.includes(file.type)){toast("Pilih foto JPG, PNG, atau WebP.");e.target.value="";return}
+    if(!["image/jpeg","image/png","image/webp"].includes(file.type)){toast("Pilih foto JPG, PNG, atau WebP.");e.target.value="";return}
     if(file.size>2*1024*1024){toast("Ukuran foto maksimal 2 MB.");e.target.value="";return}
-    const status=$("avatarUploadStatus"),picker=$("avatarFile");status.textContent="Mengunggah foto profil…";picker.disabled=true;
-    try{
-      const ext=file.type==="image/png"?"png":file.type==="image/webp"?"webp":"jpg",path=user.id+"/profile-"+Date.now()+"."+ext;
-      const {error:uploadError}=await supabaseClient.storage.from("avatars").upload(path,file,{upsert:false,contentType:file.type,cacheControl:"3600"});if(uploadError)throw uploadError;
-      const {data:publicData}=supabaseClient.storage.from("avatars").getPublicUrl(path),avatarUrl=publicData.publicUrl;
-      const {data:updateData,error:updateError}=await supabaseClient.auth.updateUser({data:{avatar_url:avatarUrl}});if(updateError)throw updateError;
-      user=updateData.user||user;renderAvatar(avatarUrl);status.textContent="Foto profil berhasil diperbarui.";toast("Foto profil tersimpan.");
-    }catch(err){status.textContent="Foto belum berhasil disimpan.";toast(err.message||"Gagal mengunggah foto.")}
-    finally{picker.disabled=false;e.target.value=""}
+    try{await openImageCrop(file,"profile")}catch(err){toast(err.message||"Gagal membuka crop foto.")}finally{e.target.value=""}
   });
   $("welcomeBannerFile").addEventListener("change",async e=>{
     const file=e.target.files&&e.target.files[0];if(!file)return;
     if(!["image/jpeg","image/png","image/webp"].includes(file.type)){toast("Pilih gambar JPG, PNG, atau WebP.");e.target.value="";return}
     if(file.size>8*1024*1024){toast("Ukuran gambar maksimal 8 MB.");e.target.value="";return}
-    const status=$("welcomeBannerStatus");status.textContent="Menyiapkan banner…";
-    try{
-      const dataUrl=await new Promise((resolve,reject)=>{
-        const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error("Gambar gagal dibaca."));reader.readAsDataURL(file);
-      });
-      const image=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error("Gambar tidak valid."));img.src=dataUrl});
-      const scale=Math.min(1,1600/image.width,700/image.height),canvas=document.createElement("canvas");
-      canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));
-      canvas.getContext("2d").drawImage(image,0,0,canvas.width,canvas.height);
-      const compressed=canvas.toDataURL("image/jpeg",0.82);
-      localStorage.setItem(WELCOME_BANNER_KEY,compressed);applyWelcomeBanner();toast("Banner sambutan berhasil dipasang.");
-    }catch(err){status.textContent="Banner gagal disimpan. Coba gambar lain.";toast(err.message||"Gagal menyimpan banner.")}
-    finally{e.target.value=""}
+    try{await openImageCrop(file,"banner")}catch(err){toast(err.message||"Gagal membuka crop banner.")}finally{e.target.value=""}
   });
   $("removeWelcomeBanner").addEventListener("click",()=>{localStorage.removeItem(WELCOME_BANNER_KEY);applyWelcomeBanner();toast("Banner sambutan dihapus.")});
   $("saveProfile").addEventListener("click",async()=>{
