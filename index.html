@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
   <link rel="apple-touch-icon" href="./icons/icon.svg">
-  <link rel="stylesheet" href="./styles.css?v=image-crop2">
+  <link rel="stylesheet" href="./styles.css?v=image-crop3">
   <title>TaskNote — Tugas Sekolah Pribadi</title>
 </head>
 <body>
@@ -123,14 +123,13 @@
   <dialog id="imageCropDialog" class="crop-dialog">
     <div class="crop-form">
       <div class="dialog-head"><div><p class="eyebrow">PRATINJAU GAMBAR</p><h2 id="cropTitle">Atur gambar</h2></div><button class="icon-button" type="button" id="cancelCrop" aria-label="Batal">×</button></div>
-      <p class="muted" id="cropHelp">Geser pengaturan untuk menyesuaikan bagian gambar yang terlihat.</p>
+      <p class="muted" id="cropHelp">Geser foto dengan satu jari dan cubit dengan dua jari untuk memperbesar atau memperkecil, seperti crop foto profil WhatsApp.</p>
       <div class="crop-frame" id="cropFrame"><img id="cropPreview" alt="Pratinjau crop gambar"></div>
-      <label class="field">Perbesar gambar <input id="cropZoom" type="range" min="1" max="3" step="0.05" value="1"></label>
       <div class="dialog-actions"><button type="button" class="secondary" id="cancelCropBtn">Batal</button><button type="button" class="primary" id="confirmCrop">Gunakan gambar</button></div>
     </div>
   </dialog>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./supabase-config.js"></script>
-  <script src="./app.js?v=image-crop3"></script>
+  <script src="./app.js?v=image-crop4"></script>
 </body>
 </html>
