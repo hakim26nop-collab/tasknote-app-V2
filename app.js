@@ -216,7 +216,7 @@
         pendingImageCrop={file,type,img};$("cropTitle").textContent=type==="profile"?"Atur foto profil":"Atur banner sambutan";
         $("cropHelp").textContent=type==="profile"?"Sesuaikan posisi foto dalam bingkai persegi.":"Sesuaikan posisi gambar dalam bingkai banner lebar.";
         cropFrame.classList.toggle("banner-crop",type==="banner");cropPreview.src=reader.result;
-        $("cropZoom").value=1;$("cropX").value=0;$("cropY").value=0;updateCropPreview();cropDialog.showModal();
+        $("cropZoom").value=1;$("cropX").value=0;$("cropY").value=0;updateCropPreview();cropDialog.showModal();resolve(true);
       };img.src=reader.result};reader.readAsDataURL(file);
     });
   }
