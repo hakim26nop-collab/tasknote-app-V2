@@ -205,19 +205,55 @@
   }
   let pendingImageCrop=null;
   const cropDialog=$("imageCropDialog"),cropPreview=$("cropPreview"),cropFrame=$("cropFrame");
-  function updateCropPreview(){
-    const zoom=Number($("cropZoom").value),x=Number($("cropX").value),y=Number($("cropY").value);
-    cropPreview.style.transform="scale("+zoom+") translate("+(-x/2)+"%, "+(-y/2)+"%)";
+  let cropState={zoom:1,x:0,y:0,pointers:new Map(),pinchDistance:0};
+  function cropOverflow(){
+    const rect=cropFrame.getBoundingClientRect(),img=pendingImageCrop?.img;
+    if(!img)return {x:0,y:0};
+    const scale=Math.max(rect.width/img.naturalWidth,rect.height/img.naturalHeight);
+    return {x:Math.max(0,(img.naturalWidth*scale*cropState.zoom-rect.width)/2),y:Math.max(0,(img.naturalHeight*scale*cropState.zoom-rect.height)/2)};
   }
-  ["cropZoom","cropX","cropY"].forEach(id=>$(id).addEventListener("input",updateCropPreview));
+  function updateCropPreview(){
+    const overflow=cropOverflow();
+    cropPreview.style.transform="translate("+(-cropState.x*overflow.x)+"px,"+(-cropState.y*overflow.y)+"px) scale("+cropState.zoom+")";
+    $("cropZoom").value=String(cropState.zoom);
+  }
+  $("cropZoom").addEventListener("input",()=>{cropState.zoom=Number($("cropZoom").value);updateCropPreview()});
+  const pointerDistance=points=>{const p=[...points.values()];return p.length<2?0:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)};
+  cropFrame.addEventListener("pointerdown",e=>{
+    if(!pendingImageCrop)return;
+    cropFrame.setPointerCapture(e.pointerId);cropState.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(cropState.pointers.size===2)cropState.pinchDistance=pointerDistance(cropState.pointers);
+    cropFrame.classList.add("is-dragging");e.preventDefault();
+  });
+  cropFrame.addEventListener("pointermove",e=>{
+    if(!cropState.pointers.has(e.pointerId))return;
+    const previous=cropState.pointers.get(e.pointerId),dx=e.clientX-previous.x,dy=e.clientY-previous.y;
+    cropState.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(cropState.pointers.size>=2){
+      const distance=pointerDistance(cropState.pointers);
+      if(cropState.pinchDistance>0&&distance>0)cropState.zoom=Math.max(1,Math.min(3,cropState.zoom*distance/cropState.pinchDistance));
+      cropState.pinchDistance=distance;
+    }else{
+      const overflow=cropOverflow();
+      if(overflow.x)cropState.x=Math.max(-1,Math.min(1,cropState.x-dx/overflow.x));
+      if(overflow.y)cropState.y=Math.max(-1,Math.min(1,cropState.y-dy/overflow.y));
+    }
+    updateCropPreview();e.preventDefault();
+  });
+  function endCropPointer(e){
+    cropState.pointers.delete(e.pointerId);cropState.pinchDistance=pointerDistance(cropState.pointers);
+    if(!cropState.pointers.size)cropFrame.classList.remove("is-dragging");
+  }
+  cropFrame.addEventListener("pointerup",endCropPointer);cropFrame.addEventListener("pointercancel",endCropPointer);
   function openImageCrop(file,type){
     return new Promise((resolve,reject)=>{
       const reader=new FileReader();reader.onerror=()=>reject(Error("Gambar gagal dibaca."));
       reader.onload=()=>{const img=new Image();img.onerror=()=>reject(Error("Gambar tidak valid."));img.onload=()=>{
-        pendingImageCrop={file,type,img};$("cropTitle").textContent=type==="profile"?"Atur foto profil":"Atur banner sambutan";
-        $("cropHelp").textContent=type==="profile"?"Sesuaikan posisi foto dalam bingkai persegi.":"Sesuaikan posisi gambar dalam bingkai banner lebar.";
+        pendingImageCrop={file,type,img};cropState={zoom:1,x:0,y:0,pointers:new Map(),pinchDistance:0};
+        $("cropTitle").textContent=type==="profile"?"Pangkas foto profil":"Pangkas banner sambutan";
+        $("cropHelp").textContent="Geser gambar untuk mengatur potongan. Cubit dengan dua jari untuk memperbesar.";
         cropFrame.classList.toggle("banner-crop",type==="banner");cropPreview.src=reader.result;
-        $("cropZoom").value=1;$("cropX").value=0;$("cropY").value=0;updateCropPreview();cropDialog.showModal();resolve(true);
+        $("cropZoom").value=1;cropDialog.showModal();requestAnimationFrame(updateCropPreview);resolve(true);
       };img.src=reader.result};reader.readAsDataURL(file);
     });
   }
@@ -227,10 +263,10 @@
     const {img,type}=pendingImageCrop,targetRatio=type==="profile"?1:1600/620;
     let sw=img.width,sh=img.height;
     if(sw/sh>targetRatio)sw=sh*targetRatio;else sh=sw/targetRatio;
-    const zoom=Number($("cropZoom").value);sw/=zoom;sh/=zoom;
+    const zoom=cropState.zoom;sw/=zoom;sh/=zoom;
     const maxX=img.width-sw,maxY=img.height-sh;
-    const sx=Math.max(0,Math.min(maxX,maxX/2+(Number($("cropX").value)/100)*(maxX/2)));
-    const sy=Math.max(0,Math.min(maxY,maxY/2+(Number($("cropY").value)/100)*(maxY/2)));
+    const sx=Math.max(0,Math.min(maxX,maxX/2-cropState.x*(maxX/2)));
+    const sy=Math.max(0,Math.min(maxY,maxY/2-cropState.y*(maxY/2)));
     const canvas=document.createElement("canvas");canvas.width=type==="profile"?800:1600;canvas.height=type==="profile"?800:620;
     canvas.getContext("2d").drawImage(img,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
     return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error("Gagal memproses crop gambar.")),"image/jpeg",.88));
