@@ -61,7 +61,7 @@
       await loadSubjects();await loadTasks();
     }
     $("profileName").textContent=name;$("welcomeName").textContent=name;$("profileEmail").textContent=email;
-    $("avatarInitial").textContent=name.charAt(0).toUpperCase();$("settingsAvatarInitial").textContent=name.charAt(0).toUpperCase();
+    setAvatarInitial("avatarInitial",name.charAt(0).toUpperCase());setAvatarInitial("settingsAvatarInitial",name.charAt(0).toUpperCase());
     renderAvatar(avatar);if(isGuest)$("settingsName").value=name;
     $("todayLabel").textContent=new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"}).toUpperCase();
     render();
@@ -175,6 +175,7 @@
     const {error}=await supabaseClient.from("subjects").insert({name,user_id:user.id});if(error){toast(error.message);return}
     $("newSubject").value="";await loadSubjects();toast("Mata pelajaran ditambahkan.");
   });
+  function setAvatarInitial(id,value){const el=$(id);if(el&&el.firstChild&&el.firstChild.nodeType===3)el.firstChild.nodeValue=value;}
   function renderAvatar(url){
     ["profileAvatarImage","settingsAvatarImage"].forEach(id=>{
       const img=$(id);if(!img)return;
@@ -208,9 +209,9 @@
   });
   $("saveProfile").addEventListener("click",async()=>{
     const name=$("settingsName").value.trim();if(!name)return toast("Nama tidak boleh kosong.");
-    if(isGuest){localStorage.setItem(GUEST_PROFILE_KEY,JSON.stringify({name}));$("profileName").textContent=name;$("welcomeName").textContent=name;$("avatarInitial").textContent=name[0].toUpperCase();$("settingsAvatarInitial").textContent=name[0].toUpperCase();return toast("Nama profil tamu diperbarui.")}
+    if(isGuest){localStorage.setItem(GUEST_PROFILE_KEY,JSON.stringify({name}));$("profileName").textContent=name;$("welcomeName").textContent=name;setAvatarInitial("avatarInitial",name[0].toUpperCase());setAvatarInitial("settingsAvatarInitial",name[0].toUpperCase());return toast("Nama profil tamu diperbarui.")}
     const {error}=await supabaseClient.auth.updateUser({data:{display_name:name}});if(error)return toast(error.message);
-    $("profileName").textContent=name;$("welcomeName").textContent=name;$("avatarInitial").textContent=name[0].toUpperCase();$("settingsAvatarInitial").textContent=name[0].toUpperCase();toast("Profil diperbarui.");
+    $("profileName").textContent=name;$("welcomeName").textContent=name;setAvatarInitial("avatarInitial",name[0].toUpperCase());setAvatarInitial("settingsAvatarInitial",name[0].toUpperCase());toast("Profil diperbarui.");
   });
   $("changePassword").addEventListener("click",async()=>{if(isGuest)return;const password=$("newPassword").value;if(password.length<6)return toast("Password minimal 6 karakter.");const {error}=await supabaseClient.auth.updateUser({password});if(error)return toast(error.message);$("newPassword").value="";toast("Password berhasil diubah.")});
   $("exportBtn").addEventListener("click",()=>{
