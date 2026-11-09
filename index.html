@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
   <link rel="apple-touch-icon" href="./icons/icon.svg">
-  <link rel="stylesheet" href="./styles.css?v=welcome-banner1">
+  <link rel="stylesheet" href="./styles.css?v=image-crop1">
   <title>TaskNote — Tugas Sekolah Pribadi</title>
 </head>
 <body>
@@ -118,6 +118,18 @@
       <label class="field">Catatan (opsional)<textarea id="taskDescription" rows="3" placeholder="Detail atau instruksi tugas…"></textarea></label>
       <div class="dialog-actions"><button type="button" class="secondary" id="cancelDialog">Batal</button><button type="submit" class="primary" id="saveTask">Simpan tugas</button></div>
     </form>
+  </dialog>
+
+  <dialog id="imageCropDialog" class="crop-dialog">
+    <div class="crop-form">
+      <div class="dialog-head"><div><p class="eyebrow">PRATINJAU GAMBAR</p><h2 id="cropTitle">Atur gambar</h2></div><button class="icon-button" type="button" id="cancelCrop" aria-label="Batal">×</button></div>
+      <p class="muted" id="cropHelp">Geser pengaturan untuk menyesuaikan bagian gambar yang terlihat.</p>
+      <div class="crop-frame" id="cropFrame"><img id="cropPreview" alt="Pratinjau crop gambar"></div>
+      <label class="field">Perbesar gambar <input id="cropZoom" type="range" min="1" max="3" step="0.05" value="1"></label>
+      <label class="field">Geser horizontal <input id="cropX" type="range" min="-100" max="100" value="0"></label>
+      <label class="field">Geser vertikal <input id="cropY" type="range" min="-100" max="100" value="0"></label>
+      <div class="dialog-actions"><button type="button" class="secondary" id="cancelCropBtn">Batal</button><button type="button" class="primary" id="confirmCrop">Gunakan gambar</button></div>
+    </div>
   </dialog>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./supabase-config.js"></script>
