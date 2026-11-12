@@ -73,7 +73,7 @@
     }else{
       const meta=user.user_metadata||{};name=meta.display_name||(user.email||"Pengguna").split("@")[0];email=user.email||"";avatar=meta.avatar_url||"";
       $("settingsName").value=meta.display_name||"";
-      await loadSubjects();await loadTasks();await loadTaskAttachments();
+      await Promise.all([loadSubjects(),loadTasks()]);
     }
     $("profileName").textContent=name;$("welcomeName").textContent=name;$("profileEmail").textContent=email;
     setAvatarInitial("avatarInitial",name.charAt(0).toUpperCase());setAvatarInitial("settingsAvatarInitial",name.charAt(0).toUpperCase());
@@ -81,6 +81,7 @@
     $("todayLabel").textContent=new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"}).toUpperCase();
     render();
     applyWelcomeBanner();
+    if(!isGuest)loadTaskAttachments().then(()=>render()).catch(error=>console.warn("Pemuatan foto tertunda:",error));
   }
   async function loadSubjects(){
     const {data,error}=await supabaseClient.from("subjects").select("id,name").order("name");
@@ -138,12 +139,11 @@
     const {data,error}=await supabaseClient.from("task_attachments").select("*").order("sort_order").order("created_at");
     if(error){console.warn("Gagal memuat lampiran tugas:",error);toast("Foto tugas belum dapat dimuat: "+error.message);return}
     for(const item of data||[]){if(!taskAttachments[item.task_id])taskAttachments[item.task_id]=[];taskAttachments[item.task_id].push({...item,signed_url:""})}
-    for(const list of Object.values(taskAttachments)){
-      for(const item of list){
-        const {data:signed,error:signedError}=await supabaseClient.storage.from("task-photos").createSignedUrl(item.storage_path,3600);
-        if(!signedError)item.signed_url=signed.signedUrl;else console.warn("URL foto gagal dibuat:",signedError);
-      }
-    }
+    const items=Object.values(taskAttachments).flat();
+    await Promise.all(items.map(async item=>{
+      const {data:signed,error:signedError}=await supabaseClient.storage.from("task-photos").createSignedUrl(item.storage_path,3600);
+      if(!signedError)item.signed_url=signed.signedUrl;else console.warn("URL foto gagal dibuat:",signedError);
+    }));
   }
   function clearPendingTaskPhotoUrls(){pendingTaskPhotoUrls.forEach(url=>URL.revokeObjectURL(url));pendingTaskPhotoUrls=[]}
   function renderTaskPhotoManager(taskId){
@@ -232,7 +232,8 @@
           savedId=result.data.id;
         }
         await saveTaskPhotos(savedId);
-        await loadSubjects();await loadTasks();await loadTaskAttachments();
+        await Promise.all([loadSubjects(),loadTasks()]);
+        loadTaskAttachments().then(()=>render()).catch(error=>console.warn("Pemuatan foto tertunda:",error));
       }
       clearPendingTaskPhotoUrls();pendingTaskPhotos=[];removedTaskPhotoIds=new Set();
       $("taskDialog").close();render();toast("Tugas berhasil disimpan.");
