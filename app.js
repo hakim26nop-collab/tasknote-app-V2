@@ -141,7 +141,7 @@
     for(const item of data||[]){if(!taskAttachments[item.task_id])taskAttachments[item.task_id]=[];taskAttachments[item.task_id].push({...item,signed_url:""})}
     const items=Object.values(taskAttachments).flat();
     await Promise.all(items.map(async item=>{
-      const {data:signed,error:signedError}=await supabaseClient.storage.from("task-photos").createSignedUrl(item.storage_path,3600);
+      const {data:signed,error:signedError}=await supabaseClient.storage.from("Task-photos").createSignedUrl(item.storage_path,3600);
       if(!signedError)item.signed_url=signed.signedUrl;else console.warn("URL foto gagal dibuat:",signedError);
     }));
   }
@@ -176,7 +176,7 @@
   async function saveTaskPhotos(taskId){
     const current=taskAttachments[String(taskId)]||[],removing=current.filter(item=>removedTaskPhotoIds.has(item.id));
     if(removing.length){
-      const {error:storageError}=await supabaseClient.storage.from("task-photos").remove(removing.map(item=>item.storage_path));
+      const {error:storageError}=await supabaseClient.storage.from("Task-photos").remove(removing.map(item=>item.storage_path));
       if(storageError)throw storageError;
       const {error:rowError}=await supabaseClient.from("task_attachments").delete().in("id",removing.map(item=>item.id));
       if(rowError)throw rowError;
@@ -186,13 +186,13 @@
       for(let i=0;i<pendingTaskPhotos.length;i++){
         const file=pendingTaskPhotos[i],extension=file.type==="image/png"?"png":file.type==="image/webp"?"webp":"jpg";
         const path=user.id+"/"+taskId+"/"+(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+i)+"."+extension;
-        const {error}=await supabaseClient.storage.from("task-photos").upload(path,file,{upsert:false,contentType:file.type,cacheControl:"3600"});
+        const {error}=await supabaseClient.storage.from("Task-photos").upload(path,file,{upsert:false,contentType:file.type,cacheControl:"3600"});
         if(error)throw error;
         uploaded.push({task_id:taskId,user_id:user.id,storage_path:path,file_name:file.name,mime_type:file.type,size_bytes:file.size,sort_order:current.length-removing.length+i});
       }
       if(uploaded.length){const {error}=await supabaseClient.from("task_attachments").insert(uploaded);if(error)throw error}
     }catch(error){
-      if(uploaded.length)await supabaseClient.storage.from("task-photos").remove(uploaded.map(item=>item.storage_path));
+      if(uploaded.length)await supabaseClient.storage.from("Task-photos").remove(uploaded.map(item=>item.storage_path));
       throw error;
     }
   }
@@ -251,7 +251,7 @@
       if(edit){const t=tasks.find(x=>String(x.id)===String(edit.dataset.edit));if(t)openTask(t)}
       if(del&&confirm("Hapus tugas ini?")){
         if(isGuest){tasks=tasks.filter(t=>String(t.id)!==String(del.dataset.delete));saveGuestData()}
-        else{const attachments=taskAttachments[String(del.dataset.delete)]||[];if(attachments.length){const {error:photoError}=await supabaseClient.storage.from("task-photos").remove(attachments.map(item=>item.storage_path));if(photoError)throw photoError}const {error}=await supabaseClient.from("tasks").delete().eq("id",del.dataset.delete);if(error)throw error;await loadTasks();await loadTaskAttachments()}
+        else{const attachments=taskAttachments[String(del.dataset.delete)]||[];if(attachments.length){const {error:photoError}=await supabaseClient.storage.from("Task-photos").remove(attachments.map(item=>item.storage_path));if(photoError)throw photoError}const {error}=await supabaseClient.from("tasks").delete().eq("id",del.dataset.delete);if(error)throw error;await loadTasks();await loadTaskAttachments()}
         render();toast("Tugas dihapus.");
       }
       if(ds&&confirm("Hapus mata pelajaran ini? Tugas terkait akan kehilangan kategorinya.")){
