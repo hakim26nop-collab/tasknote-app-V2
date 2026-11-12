@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="https://raw.githubusercontent.com/hakim26nop-collab/tasknote-app/main/icons/tasknote-192.png">
   <link rel="apple-touch-icon" href="./icons/icon.svg">
-  <link rel="stylesheet" href="./styles.css?v=deadline-dialog1">
+  <link rel="stylesheet" href="./styles.css?v=task-photos1">
   <title>TaskNote — Tugas Sekolah Pribadi</title>
 </head>
 <body>
@@ -116,6 +116,7 @@
         <label class="field">Status<select id="taskStatus"><option value="todo">Belum dikerjakan</option><option value="doing">Sedang dikerjakan</option><option value="done">Selesai</option></select></label>
       </div>
       <label class="field">Catatan (opsional)<textarea id="taskDescription" rows="3" placeholder="Detail atau instruksi tugas…"></textarea></label>
+      <div class="field task-photo-field" data-account-only><span>Foto tugas</span><p class="tiny muted">Pilih beberapa foto sekaligus. JPG, PNG, atau WebP; maksimal 8 MB per foto dan 10 foto per tugas.</p><label class="secondary file-button">＋ Tambah foto<input id="taskPhotos" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden></label><span id="taskPhotoCount" class="tiny muted">0 foto</span><div id="taskPhotoPreview" class="task-photo-preview"></div></div>
       <div class="dialog-actions"><button type="button" class="secondary" id="cancelDialog">Batal</button><button type="submit" class="primary" id="saveTask">Simpan tugas</button></div>
     </form>
   </dialog>
@@ -130,6 +131,6 @@
   </dialog>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./supabase-config.js"></script>
-  <script src="./app.js?v=deadline-time2"></script>
+  <script src="./app.js?v=task-photos1"></script>
 </body>
 </html>
