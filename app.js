@@ -7,6 +7,7 @@
   const GUEST_KEY = "tasknote_guest_v1";
   const GUEST_PROFILE_KEY = "tasknote_guest_profile_v1";
   let supabaseClient, user, isGuest = false, tasks = [];
+  let taskAttachments = {}, pendingTaskPhotos = [], removedTaskPhotoIds = new Set(), pendingTaskPhotoUrls = [];
   let subjects = ["Matematika","Bahasa Indonesia","Bahasa Inggris","IPA","IPS","PPKn","PJOK","Seni Budaya","Informatika","Agama"].map(n=>({id:n,name:n}));
   let authMode = "login", currentView = "dashboard", deferredPrompt = null;
   const statusLabel = {todo:"Belum dikerjakan",doing:"Sedang dikerjakan",done:"Selesai"};
@@ -69,7 +70,7 @@
     }else{
       const meta=user.user_metadata||{};name=meta.display_name||(user.email||"Pengguna").split("@")[0];email=user.email||"";avatar=meta.avatar_url||"";
       $("settingsName").value=meta.display_name||"";
-      await loadSubjects();await loadTasks();
+      await loadSubjects();await loadTasks();await loadTaskAttachments();
     }
     $("profileName").textContent=name;$("welcomeName").textContent=name;$("profileEmail").textContent=email;
     setAvatarInitial("avatarInitial",name.charAt(0).toUpperCase());setAvatarInitial("settingsAvatarInitial",name.charAt(0).toUpperCase());
@@ -100,7 +101,8 @@
   function taskMarkup(t){
     const priority=t.priority||"medium";
     const deadlineLabel=t.deadline?"Deadline "+dateFmt(t.deadline)+(t.deadline_time?" • "+String(t.deadline_time).slice(0,5):""):"Tanpa deadline";
-    return '<article class="task-row '+(t.status==="done"?"done":"")+'"><button class="task-check '+(t.status==="done"?"checked":"")+'" data-toggle="'+esc(t.id)+'" aria-label="Ubah status">'+(t.status==="done"?"✓":"")+'</button><div class="task-main"><div class="task-title">'+esc(t.title)+'</div><div class="task-meta"><span class="pill">'+esc(subjectName(t.subject_id))+'</span><span>'+esc(deadlineLabel)+'</span><span class="pill '+(priority==="high"?"high":"")+'">'+(priority==="high"?"Tinggi":priority==="low"?"Rendah":"Sedang")+'</span><span>'+ (statusLabel[t.status]||statusLabel.todo)+'</span></div>'+(t.description?'<div class="task-meta">'+esc(t.description)+'</div>':"")+'</div><div class="task-actions"><button class="small-action" data-edit="'+esc(t.id)+'">Edit</button><button class="small-action" data-delete="'+esc(t.id)+'">Hapus</button></div></article>';
+    const photoHtml=(taskAttachments[String(t.id)]||[]).filter(item=>item.signed_url).map(item=>'<a class="task-photo-link" href="'+esc(item.signed_url)+'" target="_blank" rel="noopener"><img src="'+esc(item.signed_url)+'" alt="Foto lampiran tugas"></a>').join("");
+    return '<article class="task-row '+(t.status==="done"?"done":"")+'"><button class="task-check '+(t.status==="done"?"checked":"")+'" data-toggle="'+esc(t.id)+'" aria-label="Ubah status">'+(t.status==="done"?"✓":"")+'</button><div class="task-main"><div class="task-title">'+esc(t.title)+'</div><div class="task-meta"><span class="pill">'+esc(subjectName(t.subject_id))+'</span><span>'+esc(deadlineLabel)+'</span><span class="pill '+(priority==="high"?"high":"")+'">'+(priority==="high"?"Tinggi":priority==="low"?"Rendah":"Sedang")+'</span><span>'+ (statusLabel[t.status]||statusLabel.todo)+'</span></div>'+(t.description?'<div class="task-meta">'+esc(t.description)+'</div>':"")+(photoHtml?'<div class="task-photo-strip">'+photoHtml+'</div>':"")+'</div><div class="task-actions"><button class="small-action" data-edit="'+esc(t.id)+'">Edit</button><button class="small-action" data-delete="'+esc(t.id)+'">Hapus</button></div></article>';
   }
   function render(){
     const active=tasks.filter(t=>t.status!=="done"),done=tasks.filter(t=>t.status==="done");
@@ -128,11 +130,74 @@
   document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>goto(b.dataset.view)));
   document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>goto(b.dataset.goto)));
   ["searchInput","statusFilter","subjectFilter"].forEach(id=>$(id).addEventListener(id==="searchInput"?"input":"change",renderTaskList));
+  async function loadTaskAttachments(){
+    taskAttachments={};
+    const {data,error}=await supabaseClient.from("task_attachments").select("*").order("sort_order").order("created_at");
+    if(error){console.warn("Gagal memuat lampiran tugas:",error);toast("Foto tugas belum dapat dimuat: "+error.message);return}
+    for(const item of data||[]){if(!taskAttachments[item.task_id])taskAttachments[item.task_id]=[];taskAttachments[item.task_id].push({...item,signed_url:""})}
+    for(const list of Object.values(taskAttachments)){
+      for(const item of list){
+        const {data:signed,error:signedError}=await supabaseClient.storage.from("task-photos").createSignedUrl(item.storage_path,3600);
+        if(!signedError)item.signed_url=signed.signedUrl;else console.warn("URL foto gagal dibuat:",signedError);
+      }
+    }
+  }
+  function clearPendingTaskPhotoUrls(){pendingTaskPhotoUrls.forEach(url=>URL.revokeObjectURL(url));pendingTaskPhotoUrls=[]}
+  function renderTaskPhotoManager(taskId){
+    clearPendingTaskPhotoUrls();
+    const existing=(taskAttachments[String(taskId)]||[]).filter(item=>!removedTaskPhotoIds.has(item.id));
+    const oldHtml=existing.map(item=>'<div class="task-photo-item"><img src="'+esc(item.signed_url)+'" alt="Foto tugas"><button type="button" class="task-photo-remove" data-remove-task-photo="'+esc(item.id)+'" aria-label="Hapus foto">×</button></div>').join("");
+    const newHtml=pendingTaskPhotos.map((file,index)=>{
+      const url=URL.createObjectURL(file);pendingTaskPhotoUrls.push(url);
+      return '<div class="task-photo-item"><img src="'+url+'" alt="Pratinjau foto"><button type="button" class="task-photo-remove" data-remove-pending-photo="'+index+'" aria-label="Hapus foto pilihan">×</button></div>';
+    }).join("");
+    $("taskPhotoPreview").innerHTML=oldHtml+newHtml;
+    $("taskPhotoCount").textContent=(existing.length+pendingTaskPhotos.length)+" foto";
+  }
+  $("taskPhotos").addEventListener("change",e=>{
+    const chosen=[...(e.target.files||[])];e.target.value="";
+    for(const file of chosen){
+      if(!["image/jpeg","image/png","image/webp"].includes(file.type)){toast("Pilih foto JPG, PNG, atau WebP.");continue}
+      if(file.size>8*1024*1024){toast("Setiap foto maksimal 8 MB.");continue}
+      const existing=(taskAttachments[$("taskId").value]||[]).filter(x=>!removedTaskPhotoIds.has(x.id)).length;
+      if(existing+pendingTaskPhotos.length>=10){toast("Maksimal 10 foto per tugas.");break}
+      pendingTaskPhotos.push(file);
+    }
+    renderTaskPhotoManager($("taskId").value);
+  });
+  $("taskPhotoPreview").addEventListener("click",e=>{
+    const old=e.target.closest("[data-remove-task-photo]"),fresh=e.target.closest("[data-remove-pending-photo]");
+    if(old){removedTaskPhotoIds.add(old.dataset.removeTaskPhoto);renderTaskPhotoManager($("taskId").value)}
+    if(fresh){pendingTaskPhotos.splice(Number(fresh.dataset.removePendingPhoto),1);renderTaskPhotoManager($("taskId").value)}
+  });
+  async function saveTaskPhotos(taskId){
+    const current=taskAttachments[String(taskId)]||[],removing=current.filter(item=>removedTaskPhotoIds.has(item.id));
+    if(removing.length){
+      const {error:storageError}=await supabaseClient.storage.from("task-photos").remove(removing.map(item=>item.storage_path));
+      if(storageError)throw storageError;
+      const {error:rowError}=await supabaseClient.from("task_attachments").delete().in("id",removing.map(item=>item.id));
+      if(rowError)throw rowError;
+    }
+    const uploaded=[];
+    try{
+      for(let i=0;i<pendingTaskPhotos.length;i++){
+        const file=pendingTaskPhotos[i],extension=file.type==="image/png"?"png":file.type==="image/webp"?"webp":"jpg";
+        const path=user.id+"/"+taskId+"/"+(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+i)+"."+extension;
+        const {error}=await supabaseClient.storage.from("task-photos").upload(path,file,{upsert:false,contentType:file.type,cacheControl:"3600"});
+        if(error)throw error;
+        uploaded.push({task_id:taskId,user_id:user.id,storage_path:path,file_name:file.name,mime_type:file.type,size_bytes:file.size,sort_order:current.length-removing.length+i});
+      }
+      if(uploaded.length){const {error}=await supabaseClient.from("task_attachments").insert(uploaded);if(error)throw error}
+    }catch(error){
+      if(uploaded.length)await supabaseClient.storage.from("task-photos").remove(uploaded.map(item=>item.storage_path));
+      throw error;
+    }
+  }
   function openTask(t){
     $("taskForm").reset();$("taskId").value=t?.id||"";$("dialogTitle").textContent=t?"Edit Tugas":"Tambah Tugas";
     $("taskTitle").value=t?.title||"";$("taskSubject").value=t?.subject_id?subjectName(t.subject_id):"";
     $("taskDue").value=t?.deadline?String(t.deadline).slice(0,10):"";$("taskDueTime").value=t?.deadline_time?String(t.deadline_time).slice(0,5):"";$("taskPriority").value=t?.priority||"medium";
-    $("taskStatus").value=t?.status||"todo";$("taskDescription").value=t?.description||"";$("taskDialog").showModal();
+    $("taskStatus").value=t?.status||"todo";$("taskDescription").value=t?.description||"";pendingTaskPhotos=[];removedTaskPhotoIds=new Set();renderTaskPhotoManager(t?.id||"");$("taskDialog").showModal();
   }
   ["quickAdd","addTaskBtn"].forEach(id=>$(id).addEventListener("click",()=>openTask()));
   $("closeDialog").addEventListener("click",()=>$("taskDialog").close());$("cancelDialog").addEventListener("click",()=>$("taskDialog").close());
@@ -154,9 +219,19 @@
         saveGuestData();
       }else{
         payload.user_id=user.id;
-        const result=id?await supabaseClient.from("tasks").update(payload).eq("id",id):await supabaseClient.from("tasks").insert(payload);
-        if(result.error)throw result.error;await loadSubjects();await loadTasks();
+        let savedId=id;
+        if(id){
+          const result=await supabaseClient.from("tasks").update(payload).eq("id",id).select("id").single();
+          if(result.error)throw result.error;
+        }else{
+          const result=await supabaseClient.from("tasks").insert(payload).select("id").single();
+          if(result.error)throw result.error;
+          savedId=result.data.id;
+        }
+        await saveTaskPhotos(savedId);
+        await loadSubjects();await loadTasks();await loadTaskAttachments();
       }
+      clearPendingTaskPhotoUrls();pendingTaskPhotos=[];removedTaskPhotoIds=new Set();
       $("taskDialog").close();render();toast("Tugas berhasil disimpan.");
     }catch(err){toast("Gagal menyimpan: "+(err.message||"periksa koneksi dan izin database."))}
   });
@@ -172,7 +247,7 @@
       if(edit){const t=tasks.find(x=>String(x.id)===String(edit.dataset.edit));if(t)openTask(t)}
       if(del&&confirm("Hapus tugas ini?")){
         if(isGuest){tasks=tasks.filter(t=>String(t.id)!==String(del.dataset.delete));saveGuestData()}
-        else{const {error}=await supabaseClient.from("tasks").delete().eq("id",del.dataset.delete);if(error)throw error;await loadTasks()}
+        else{const attachments=taskAttachments[String(del.dataset.delete)]||[];if(attachments.length){const {error:photoError}=await supabaseClient.storage.from("task-photos").remove(attachments.map(item=>item.storage_path));if(photoError)throw photoError}const {error}=await supabaseClient.from("tasks").delete().eq("id",del.dataset.delete);if(error)throw error;await loadTasks();await loadTaskAttachments()}
         render();toast("Tugas dihapus.");
       }
       if(ds&&confirm("Hapus mata pelajaran ini? Tugas terkait akan kehilangan kategorinya.")){
