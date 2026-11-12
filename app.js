@@ -30,7 +30,10 @@
   function saveGuestData(){localStorage.setItem(GUEST_KEY,JSON.stringify({tasks,subjects}))}
   function guestProfile(){try{return JSON.parse(localStorage.getItem(GUEST_PROFILE_KEY)||"{}")}catch(_){return {}}}
   function setGuestOnlyUI(){
-    document.querySelectorAll("[data-account-only]").forEach(el=>el.classList.toggle("hidden",isGuest));
+    document.querySelectorAll("[data-account-only]").forEach(el=>el.classList.remove("hidden"));
+    const photoInput=$("taskPhotos"),photoHelp=$("taskPhotoHelp");
+    if(photoInput)photoInput.disabled=isGuest;
+    if(photoHelp)photoHelp.textContent=isGuest?"Login dengan akun untuk mengunggah dan menyimpan foto tugas ke cloud.":"Pilih beberapa foto sekaligus. JPG, PNG, atau WebP; maksimal 8 MB per foto dan 10 foto per tugas.";
     $("logoutBtn").title=isGuest?"Keluar dari mode tamu":"Keluar";
     $("logoutBtn").setAttribute("aria-label",isGuest?"Keluar dari mode tamu":"Keluar");
   }
