@@ -249,7 +249,7 @@
         render();
       }
       if(edit){const t=tasks.find(x=>String(x.id)===String(edit.dataset.edit));if(t)openTask(t)}
-      if(del&&confirm("Hapus tugas ini?")){
+      if(del){
         if(isGuest){tasks=tasks.filter(t=>String(t.id)!==String(del.dataset.delete));saveGuestData()}
         else{const attachments=taskAttachments[String(del.dataset.delete)]||[];if(attachments.length){const {error:photoError}=await supabaseClient.storage.from("Task-photos").remove(attachments.map(item=>item.storage_path));if(photoError)throw photoError}const {error}=await supabaseClient.from("tasks").delete().eq("id",del.dataset.delete);if(error)throw error;await loadTasks();await loadTaskAttachments()}
         render();toast("Tugas dihapus.");
