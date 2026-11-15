@@ -1,9 +1,9 @@
-const CACHE_NAME="tasknote-shell-v40";
+const CACHE_NAME="tasknote-shell-v41";
 const APP_SHELL=[
   "./",
   "./index.html",
-  "./styles.css?v=task-deletefast1",
-  "./app.js?v=task-deletefast1",
+  "./styles.css?v=task-delete-no-confirm2",
+  "./app.js?v=task-delete-no-confirm2",
   "./supabase-config.js",
   "./manifest.webmanifest",
   "./icons/icon.svg"
